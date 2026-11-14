@@ -27,6 +27,7 @@ IMAGES = {
     "adria-interior-7.jpg": WIX + "fcca76_d60fd7d69fff448995cfe270fd6b3cc3~mv2.jpg",
     "polaris-sks.jpg": BQ + "f45aefd1-b529-4f1c-bcc1-68490b3839df/polaris-800-sks.jpeg",
     "polaris-rmk.jpg": BQ + "80e0c6dc-03fd-4e4d-b6a6-0432120728d5/polaris-850-pro-rmk.jpeg",
+    "henger-side.jpg": WIX + "fcca76_2bfe0e41809c43bdbd4d40407b36994d~mv2.jpeg",
     "henger.jpg": BQ + "fdd4f653-6222-4f94-8182-f865110a1839/henger-innside.jpeg",
 }
 
@@ -195,7 +196,7 @@ def p_utleie(c):
         ("snoskuter", "snoskuter-hero.jpg", "To Polaris snøskutere i dyp snø",
          "Snøskuter til leie", "Polaris SKS 800 og PRO RMK 850. Løypeskuter og fjellskuter – alene eller i pakke med henger.",
          f"fra {kr(1990)} <small>per døgn · depositum {kr(5000)}</small>"),
-        ("henger", "henger.jpg", "Skuter- og varehengeren sett innvendig",
+        ("henger", "henger-side.jpg", "Skuter- og varehengeren sett fra siden",
          "Henger til leie", "Skuter- og varehenger. Til snøskuter, flyttelass, hageavfall og annen frakt. Henting i Overhalla.",
          f"fra {kr(700)} <small>per døgn · depositum {kr(2000)}</small>"),
         ("racing-simulator", None, "",
@@ -286,9 +287,10 @@ def p_henger(c):
   <div class="stack">
     <h1>Henger til leie i Overhalla</h1>
     <p class="lead">Vår henger er både skuterhenger og varehenger. Frakt snøskuteren til hytta om vinteren – eller bruk den til flyttelass, hageavfall, byggevarer og annet utstyr resten av året.</p>
+    <div style="max-width:560px">{c.img('henger-side.jpg', 'Skuter- og varehengeren sett fra siden')}</div>
   </div>
   <div class="two">
-    <article class="card">{c.img('henger.jpg', 'Skuter- og varehengeren sett innvendig')}<div class="body">
+    <article class="card">{c.img('henger.jpg', 'Lasterommet i hengeren')}<div class="body">
       <p class="tag">Hele året</p><h2>Skuter- og varehenger</h2>
       <p>Allsidig henger for snøskuter og vanlig varetransport. Henting i Overhalla.</p>
       <dl class="spec"><dt>Bruk</dt><dd>snøskuter, flytting, hageavfall, byggevarer m.m.</dd><dt>Depositum</dt><dd>{kr(2000)}</dd>
