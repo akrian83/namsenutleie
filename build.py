@@ -97,6 +97,7 @@ main .wrap{padding-top:40px;padding-bottom:56px}
 .card .body{padding:18px;display:flex;flex-direction:column;gap:10px;flex:1}
 .card .btn{margin-top:auto}
 .price{font:700 1.1rem/1.2 var(--display);font-variant-numeric:tabular-nums;color:var(--ink)}
+.tag{font:700 .78rem/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--signal);max-width:none}
 .price small{font:400 .95rem var(--body);color:var(--muted)}
 .shot{margin:0;aspect-ratio:4/3;background:var(--line);overflow:hidden}
 .shot img{width:100%;height:100%;object-fit:cover}
@@ -111,7 +112,7 @@ main .wrap{padding-top:40px;padding-bottom:56px}
 .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:12px}
 dl.spec{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-variant-numeric:tabular-nums}
-dl.spec dt{color:var(--muted)} dl.spec dd{margin:0;font-weight:600;text-align:right}
+dl.spec dt{color:var(--muted)} dl.spec dd{margin:0;font-weight:600;text-align:right;overflow-wrap:anywhere}
 ul.tick{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px}
 .tablewrap{overflow-x:auto}
 table{border-collapse:collapse;width:100%;background:var(--paper);border:1px solid var(--line);border-radius:8px;font-variant-numeric:tabular-nums}
@@ -166,7 +167,7 @@ def p_home(c):
         ("adria-altea-552-pk-galleri", "Campingvogn", "Adria Altea 552 PK med tre køyer.", f"{kr(6500)} <small>per uke</small>"),
         ("snoskuter", "Snøskuter", "To Polaris-skutere, enkeltvis eller som pakke med henger.", f"fra {kr(1990)} <small>per døgn</small>"),
         ("henger", "Henger", "Lukket henger for skuter og varer.", f"{kr(700)} <small>per døgn</small>"),
-        ("racing-simulator", "Racing-simulator", "Profesjonell rigg med tre skjermer.", f"fra {kr(5500)} <small>for 4 dager</small>"),
+        ("racing-simulator", "Racing-simulator", "Fullskala rigg med tre skjermer.", f"{kr(5500)} <small>inntil 4 døgn</small>"),
     ]
     items = "".join(
         f'<article class="card"><div class="body"><h3>{t}</h3><p>{d}</p><p class="price">{pr}</p>'
@@ -192,14 +193,14 @@ def p_utleie(c):
          "Adria Altea 552 m/3 køyer", "Praktisk campingvogn med 3 køyer og god plass til familieferie. Egenvekt 1310 kg og bredde 230 cm – passer også bak elbil.",
          f"{kr(6500)} <small>per uke · depositum {kr(10000)}</small>"),
         ("snoskuter", "snoskuter-hero.jpg", "To Polaris snøskutere i dyp snø",
-         "Snøskuter", "Polaris 800 SKS 155 og Polaris 850 PRO RMK 155. Leies enkeltvis eller som pakke med henger.",
+         "Snøskuter til leie", "Polaris SKS 800 og PRO RMK 850. Løypeskuter og fjellskuter – alene eller i pakke med henger.",
          f"fra {kr(1990)} <small>per døgn · depositum {kr(5000)}</small>"),
         ("henger", "henger.jpg", "Skuter- og varehengeren sett innvendig",
-         "Henger", "Lukket 4P Trailers 445 Touring med lokk. Brukes til snøskuter og som varehenger. Nyttelast 880 kg.",
-         f"{kr(700)} <small>per døgn</small>"),
+         "Henger til leie", "Skuter- og varehenger. Til snøskuter, flyttelass, hageavfall og annen frakt. Henting i Overhalla.",
+         f"fra {kr(700)} <small>per døgn · depositum {kr(2000)}</small>"),
         ("racing-simulator", None, "",
-         "Racing-simulator", "Profesjonell rigg med Fanatec direktedrevet ratt, tre 32-tommers skjermer og kraftig PC.",
-         f"fra {kr(5500)} <small>for 4 dager</small>"),
+         "Simulator til leie", "Fullskala rigg med tre skjermer. Til bursdagen, helgen eller firmafesten. Levering i Namdalen for bedrifter.",
+         f"{kr(5500)} <small>inntil 4 døgn</small>"),
     ]
     cards = "".join(
         f'<article class="card">{c.img(f, alt) if f else ""}<div class="body"><h2>{t}</h2><p>{d}</p><p class="price">{pr}</p>'
@@ -248,78 +249,88 @@ def p_vogn(c):
 
 
 def p_skuter(c):
-    sks, rmk, h = 1990, 2290, 700
-    pk = lambda *x: round(sum(x) * 0.9)
+    def sk(img, alt, tag, name, txt, motor, price, helg, slug):
+        return f"""<article class="card">{c.img(img, alt)}<div class="body">
+      <p class="tag">{tag}</p><h2>{name}</h2><p>{txt}</p>
+      <dl class="spec"><dt>Motor</dt><dd>{motor}</dd><dt>Belte</dt><dd>155″</dd><dt>Depositum</dt><dd>{kr(5000)}</dd></dl>
+      <p class="price">Fra {kr(price)} <small>per døgn · helg {kr(helg)}</small></p>{book(SHOP_P + slug, 'Book nå')}</div></article>"""
+    def pk(name, txt, price, slug):
+        return f"""<article class="card"><div class="body"><h3>{name}</h3><p>{txt}</p>
+      <p class="price">Fra {kr(price)} <small>per døgn</small></p>{book(SHOP_P + slug, 'Book pakke')}</div></article>"""
     return f"""<main><div class="wrap stack" style="gap:32px">
   <div class="stack">
-    <h1>Leie av snøskuter</h1>
-    <p class="lead">To Polaris-skutere med 155-tommers belte. Lei én, eller ta begge med henger. Hentes i Overhalla.</p>
-    <a class="btn ghost" href="#priser">Se priser og pakker</a>
+    <h1>Snøskuter til leie i Namdalen</h1>
+    <p class="lead">Lei en godt vedlikeholdt Polaris for en dag på løypa, en helg på hytta eller en isfisketur. Vi har to skutere – én for trygg løypekjøring og én for deg som vil ut i dyp snø. Lei dem alene, eller som pakke med skuterhenger.</p>
   </div>
   <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
-    <article class="card">{c.img('polaris-sks.jpg', 'Sort Polaris 800 SKS 155 snøskuter')}<div class="body">
-      <h2>Polaris 800 SKS 155</h2><p>Den sorte. Allsidig skuter som fungerer godt både i løype og løssnø.</p>
-      <p class="price">{kr(sks)} <small>per døgn</small></p>{book(SHOP_P + 'polaris-800-sks-155')}</div></article>
-    <article class="card">{c.img('polaris-rmk.jpg', 'Gul Polaris 850 PRO RMK 155 snøskuter')}<div class="body">
-      <h2>Polaris 850 PRO RMK 155</h2><p>Den gule. Lett og kraftig fjellskuter.</p>
-      <p class="price">{kr(rmk)} <small>per døgn</small></p>{book(SHOP_P + 'polaris-850-pro-rmk-155')}</div></article>
+    {sk('polaris-sks.jpg', 'Sort Polaris 800 SKS 155 snøskuter', 'Løype og tur', 'Polaris 800 SKS 155', 'Allsidig skuter med god komfort og justerbare støtdempere. Stabil på hardpakket løype – et trygt valg for deg som kjører mest i løypene.', '800 cc totakt', 1990, 3980, 'polaris-800-sks-155')}
+    {sk('polaris-rmk.jpg', 'Gul Polaris 850 PRO RMK 155 snøskuter', 'Dyp snø og fjell', 'Polaris 850 PRO RMK 155', 'Lett fjellskuter bygget for løs snø og bratt terreng. Passer for erfarne førere som vil utforske.', '850 cc totakt', 2290, 4580, 'polaris-850-pro-rmk-155')}
   </div>
-  <div class="stack" id="priser"><h2>Priser og pakker</h2>
-  <div class="tablewrap"><table>
-    <thead><tr><th>Hva</th><th class="num">Pris per døgn</th><th>Booking</th></tr></thead><tbody>
-    <tr><td>Polaris 800 SKS 155</td><td class="num">{kr(sks)}</td><td><a href="{SHOP_P}polaris-800-sks-155">Book</a></td></tr>
-    <tr><td>Polaris 850 PRO RMK 155</td><td class="num">{kr(rmk)}</td><td><a href="{SHOP_P}polaris-850-pro-rmk-155">Book</a></td></tr>
-    <tr><td>SKS + henger</td><td class="num">{kr(pk(sks, h))}</td><td><a href="{SHOP_P}pakke-polaris-800-sks-henger">Book</a></td></tr>
-    <tr><td>RMK + henger</td><td class="num">{kr(pk(rmk, h))}</td><td><a href="{SHOP_P}pakke-polaris-850-pro-rmk-henger">Book</a></td></tr>
-    <tr><td>Begge skutere + henger</td><td class="num">{kr(pk(sks, rmk, h))}</td><td><a href="{SHOP_P}pakke-2-snoskutere-henger">Book</a></td></tr>
-    </tbody></table></div>
-  <p>Pakkeprisene har 10{NB}% rabatt. Depositum {kr(5000)}. Alle priser er inkludert mva.</p></div>
-  <div class="note stack" style="gap:8px"><h3>Før du kjører</h3>
-    <p>Du må ha gyldig førerrett for snøskuter og kjøre kun der det er lovlig. Les <a href="{c.link('vilkar')}">vilkårene</a> før du bestiller.</p></div>
+  <div class="stack"><h2>Pakker med skuterhenger</h2><p>Ca. 10{NB}% rimeligere enn å leie hver for seg.</p>
+  <div class="cards">
+    {pk('SKS 800 + henger', 'Løypeskuteren og skuterhengeren i én bestilling.', 2421, 'pakke-polaris-800-sks-henger')}
+    {pk('PRO RMK 850 + henger', 'Fjellskuteren og skuterhengeren i én bestilling.', 2691, 'pakke-polaris-850-pro-rmk-henger')}
+    {pk('2 snøskutere + henger', 'Begge skuterne og hengeren – ta med hele gjengen.', 4482, 'pakke-2-snoskutere-henger')}
+  </div></div>
+  <div class="note stack" style="gap:8px"><h3>Dette må du vite</h3><ul class="tick">
+    <li>Førerkort klasse S, eller førerett i klasse B fra før 1. juli 2006. Vi sjekker førerkort ved utlevering.</li>
+    <li>Kjøring kun i lovlige snøskuterløyper eller der du har tillatelse. Du er selv ansvarlig for løypekort og lokale regler.</li>
+    <li>Hjelm er påbudt.</li>
+    <li>Skuteren leveres med full tank og skal leveres tilbake med full tank.</li>
+    <li>Se våre <a href="{c.link('vilkar')}">leievilkår</a>.</li></ul></div>
 </div></main>"""
 
 
 def p_henger(c):
     return f"""<main><div class="wrap stack" style="gap:32px">
   <div class="stack">
-    <h1>Leie av henger</h1>
-    <p class="lead">Lukket henger med lokk. Tar snøskuter om vinteren og fungerer som varehenger resten av året, for eksempel til flytting, hageavfall og byggematerialer.</p>
-    <p class="price">{kr(700)} <small>per døgn, inkludert mva</small></p>
-    {book(SHOP_P + 'snoskutertilhenger')}
+    <h1>Henger til leie i Overhalla</h1>
+    <p class="lead">Vår henger er både skuterhenger og varehenger. Frakt snøskuteren til hytta om vinteren – eller bruk den til flyttelass, hageavfall, byggevarer og annet utstyr resten av året.</p>
   </div>
   <div class="two">
-    {c.img('henger.jpg', 'Skuter- og varehengeren sett innvendig')}
-    <div class="panel"><h3>Nøkkeldata</h3><dl class="spec">
-      <dt>Modell</dt><dd>4P Trailers 445 Touring</dd><dt>Type</dt><dd>Lukket med lokk, én aksel</dd>
-      <dt>Lengde</dt><dd>596 cm</dd><dt>Bredde</dt><dd>200 cm</dd>
-      <dt>Egenvekt</dt><dd>380 kg</dd><dt>Nyttelast</dt><dd>880 kg</dd><dt>Tillatt totalvekt</dt><dd>1260 kg</dd></dl></div>
+    <article class="card">{c.img('henger.jpg', 'Skuter- og varehengeren sett innvendig')}<div class="body">
+      <p class="tag">Hele året</p><h2>Skuter- og varehenger</h2>
+      <p>Allsidig henger for snøskuter og vanlig varetransport. Henting i Overhalla.</p>
+      <dl class="spec"><dt>Bruk</dt><dd>snøskuter, flytting, hageavfall, byggevarer m.m.</dd><dt>Depositum</dt><dd>{kr(2000)}</dd>
+      <dt>Mål</dt><dd>5,96 × 2,01 m (total lengde og bredde)</dd><dt>Nyttelast</dt><dd>880 kg</dd><dt>Tillatt totalvekt</dt><dd>1{NB}260 kg</dd></dl>
+      <p class="price">Fra {kr(700)} <small>per døgn · helg {kr(1400)}</small></p>{book(SHOP_P + 'snoskutertilhenger', 'Book henger')}</div></article>
+    <article class="card"><div class="body"><p class="tag">Vinterpakke</p><h2>Henger + snøskuter</h2>
+      <p>Lei hengeren sammen med én eller begge skuterne og spar ca. 10{NB}%.</p>
+      <dl class="spec"><dt>SKS 800 + henger</dt><dd>fra {kr(2421)}/døgn</dd><dt>PRO RMK 850 + henger</dt><dd>fra {kr(2691)}/døgn</dd><dt>2 skutere + henger</dt><dd>fra {kr(4482)}/døgn</dd></dl>
+      <a class="btn ghost" href="{c.link('snoskuter')}">Se skuterpakkene</a></div></article>
   </div>
-  <div class="note stack" style="gap:8px"><h3>Sjekk bilen din</h3>
-    <p>Med førerkort klasse B kan bil og henger ha samlet tillatt totalvekt på inntil 3500 kg. Tyngre vogntog krever B96 eller BE. Du har selv ansvar for riktig førerkortklasse, tillatt tilhengervekt og sikring av lasten. Les <a href="{c.link('vilkar')}">vilkårene</a> før du bestiller.</p></div>
+  <div class="note stack" style="gap:8px"><h3>Dette må du vite</h3><ul class="tick">
+    <li>Bilen må ha hengerfeste og tillatt tilhengervekt som dekker hengeren med last (inntil 1{NB}260 kg).</li>
+    <li>Med førerkort B kan bil og henger ha samlet tillatt totalvekt på inntil 3{NB}500 kg. Over det trengs B96 (inntil 4{NB}250 kg) eller BE. Sjekk bilens vognkort.</li>
+    <li>Lasten skal sikres forskriftsmessig, og hengeren leveres tilbake ryddet og uten avfall.</li>
+    <li>Skader meldes umiddelbart. Se våre <a href="{c.link('vilkar')}">leievilkår</a>.</li></ul></div>
 </div></main>"""
 
 
 def p_sim(c):
     return f"""<main><div class="wrap stack" style="gap:32px">
   <div class="stack">
-    <h1>Leie av racing-simulator</h1>
-    <p class="lead">Profesjonell simulatorrigg med direktedrevet ratt, tre skjermer og kraftig PC. For bedrifter, arrangementer, messer og førere som vil trene seriøst.</p>
-    <p class="price">{kr(5500)} <small>for inntil 4 dager, deretter {kr(600)} per dag · inkludert mva</small></p>
-    {book(SHOP_P + 'racing-simulator')}
+    <h1>Racing-simulator til leie</h1>
+    <p class="lead">Til firmafesten, bursdagen eller helgen. Fullskala simulator med direktedrevet ratt, pedaler i klubbsportklasse og tre 32″ buede skjermer – en realistisk følelse av å sitte i en racerbil.</p>
   </div>
   <div class="two">
-    <div class="panel"><h3>Dette er riggen</h3><ul class="tick">
-      <li>Trak Racer TR160 cockpit med Sparco-sete</li>
-      <li>Fanatec CSL DD 8 Nm direktedrevet rattbase</li>
-      <li>Fanatec ClubSport V3-pedaler, girspak og håndbrekk</li>
-      <li>Formel-ratt og NASCAR-ratt</li>
-      <li>3 × AOC 32" buede skjermer</li>
-      <li>PC med Intel Core i9 og RTX 2080 Ti</li>
-      <li>Hjul på riggen for enkel flytting</li></ul></div>
+    <div class="panel"><p class="tag">Utstyr</p><h2>Dette får du</h2><dl class="spec">
+      <dt>Cockpit</dt><dd>Trak Racer TR160 med Sparco Circuit-sete</dd>
+      <dt>Ratt</dt><dd>Fanatec CSL DD 8 Nm, Formula- og Nascar-ratt</dd>
+      <dt>Pedaler</dt><dd>Fanatec ClubSport V3 med performance kit</dd>
+      <dt>Girspak og håndbrekk</dt><dd>Fanatec</dd>
+      <dt>Skjerm</dt><dd>3 × 32″ buede gamingskjermer</dd>
+      <dt>PC</dt><dd>Intel Core i9, RTX 2080 Ti, 32 GB RAM</dd></dl></div>
+    <div class="panel"><p class="tag">Privat</p><h2>Lei for helgen</h2>
+      <p>Perfekt for bursdag, vennekveld eller en helg med trening. Kort opplæring ved utlevering.</p>
+      <dl class="spec"><dt>Inntil 4 døgn</dt><dd>{kr(5500)} – minstepris, helgen inkludert</dd><dt>Ekstra døgn</dt><dd>{kr(600)} per døgn</dd><dt>Depositum</dt><dd>{kr(3000)}</dd></dl>
+      <p class="price">{kr(5500)} <small>inntil 4 døgn</small></p>{book(SHOP_P + 'racing-simulator', 'Book nå')}</div>
   </div>
-  <div class="panel"><h2>Spørsmål om oppsett eller arrangement?</h2>
-    <p>Ta kontakt, så avklarer vi behovet før du booker.</p>
-    <a class="btn ghost" href="{c.link('kontakt')}">Kontakt oss</a></div>
+  <div class="panel"><h2>Bedrift og arrangement</h2>
+    <p>Firmafest, messe eller teambuilding – med konkurranse og resultatliste.</p>
+    <p>Vi leverer, rigger opp og henter i Namdalen. Pris etter omfang, fra {kr(5500)}.</p>
+    <a class="btn ghost" href="{c.link('kontakt')}">Be om tilbud</a></div>
+  <p>Utstyret skal stå innendørs og tørt. Se våre <a href="{c.link('vilkar')}">leievilkår</a>.</p>
 </div></main>"""
 
 
