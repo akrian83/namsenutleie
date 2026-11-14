@@ -216,7 +216,7 @@ def p_utleie(c):
     if c.live("hytte"):
         rows.append(("hytte", "hytte-ute-1.jpg", "Mørk tømmerhytte med hvite vinduer og overbygd veranda",
                      "Hytte ved Grong skisenter", "Hytte med to soverom og hems, kort vei til bakken og skistua.",
-                     f"{TODO('PRIS')} <small>per døgn</small>"))
+                     "Pris på Airbnb <small>varierer med sesong</small>"))
     cards = "".join(
         f'<article class="card">{c.img(f, alt) if f else ""}<div class="body"><h2>{t}</h2><p>{d}</p><p class="price">{pr}</p>'
         f'<a class="btn" href="{c.link(s)}">Se detaljer og book</a></div></article>' for s, f, alt, t, d, pr in rows)
@@ -327,6 +327,39 @@ def TODO(t):
     return f'<mark class="todo">[{t}]</mark>'
 
 
+AIRBNB_HYTTE = "https://www.airbnb.no/"  # byttes til lenken til hytteannonsen
+
+HYTTE_TERMS = [
+    ("Bestilling og betaling", [
+        "Hytta bestilles og betales gjennom Airbnb. Pris, betaling, avbestilling og refusjon følger reglene som står i annonsen på Airbnb.",
+        "Den som bestiller er ansvarlig leietaker og skal selv bo i hytta under oppholdet.",
+        f"Antall gjester skal ikke overstige det som er oppgitt i bestillingen. {TODO('MAKS ANTALL GJESTER')}"]),
+    ("Innsjekk og utsjekk", [
+        f"Innsjekk fra kl. {TODO('KLOKKESLETT')}, utsjekk innen kl. {TODO('KLOKKESLETT')}.",
+        "Hytta har selvbetjent innsjekk. Praktisk informasjon sendes i Airbnb før ankomst.",
+        "Forsinket utsjekk som hindrer neste gjest eller klargjøring, kan bli belastet."]),
+    ("Sengetøy og håndklær", [
+        "Leietaker tar med eget sengetøy og egne håndklær. Dyner og puter finnes i hytta.",
+        "Av hygieniske grunner skal senger ikke brukes uten sengetøy."]),
+    ("Rengjøring ved avreise", [
+        "Hytta skal vaskes etter bruk, slik at den er klar til neste gjest: gulv, kjøkken, bad og overflater rengjøres, oppvask tas, og søppel tas med eller kastes i anvist container.",
+        f"Vaskes ikke hytta tilfredsstillende, belastes et rengjøringsgebyr. {TODO('BELØP')}"]),
+    ("Røyking, dyr og ro", [
+        "Røyking er ikke tillatt inne i hytta.",
+        "Dyr er tillatt. Dyr skal ikke ligge i senger eller sofa, og hår og spor etter dyr fjernes før avreise.",
+        "Ta hensyn til naboene. Fest og arrangementer er ikke tillatt uten avtale."]),
+    ("Ansvar og skader", [
+        "Leietaker er ansvarlig for hytta og inventaret i leieperioden og erstatter skader og tap som skyldes uaktsomhet.",
+        "Skader og mangler meldes til utleier så snart de oppdages.",
+        "Utleier er ikke ansvarlig for forhold utenfor utleiers kontroll, som strømbrudd, vær eller stengte veier og skianlegg."]),
+    ("Brannsikkerhet", [
+        "Gjør deg kjent med røykvarslere, slokkeutstyr og rømningsveier ved ankomst.",
+        "Levende lys skal ikke forlates uten tilsyn."]),
+    ("Kontakt", [
+        "Utleier er Namsen Utleie, AKRI Holding AS. Henvendelser om oppholdet sendes i Airbnb, eller til post@namsenutleie.no og +47 95 94 68 55."]),
+]
+
+
 def p_hytte(c):
     ute = [("hytte-ute-1.jpg", "Mørk tømmerhytte med hvite vinduer og overbygd veranda", "Overbygd veranda ved inngangen"),
            ("hytte-ute-2.jpg", "Gavlveggen på hytta med vindu i første etasje og på hemsen", "Gavlen med hemsvinduet øverst")]
@@ -340,14 +373,16 @@ def p_hytte(c):
             ("hytte-hems.jpg", "Hems med rød sovesofa under skråtak i furupanel", "Hems med sovesofa"),
             ("hytte-gang.jpg", "Dør fra stua ut til gang med flislagt gulv og knaggrekke", "Gang med plass til yttertøy")]
     g = lambda lst: "".join(f"<figure>{c.img(f, a)}<figcaption>{cap}</figcaption></figure>" for f, a, cap in lst)
+    vilkar = "".join(f'<div class="panel"><h3>{i}. {h}</h3><ul class="tick">{"".join(f"<li>{x}</li>" for x in items)}</ul></div>'
+                     for i, (h, items) in enumerate(HYTTE_TERMS, 1))
     return f"""<main><div class="wrap stack" style="gap:32px">
   <div class="two" style="align-items:center">
     <div class="stack">
       <p class="tag">Nyhet</p>
       <h1>Hytte til leie ved Grong skisenter</h1>
       <p class="lead">Koselig tømmerhytte med to soverom og hems, kort vei til bakken og skistua. Passer for familien eller en liten vennegjeng på skihelg.</p>
-      <p class="price">{TODO('PRIS')} <small>per døgn · minimum {TODO('ANTALL')} døgn</small></p>
-      {TODO('BOOKINGLENKE – Booqable eller Airbnb')}
+      <p>Hytta bookes på Airbnb. Der ser du ledige datoer og gjeldende pris, som varierer med sesong og ukedag.</p>
+      {book(AIRBNB_HYTTE, 'Se pris og book på Airbnb')} {TODO('AIRBNB-LENKE MANGLER')}
     </div>
     <div>{c.img('hytte-ute-1.jpg', 'Mørk tømmerhytte med hvite vinduer og overbygd veranda', True)}</div>
   </div>
@@ -368,11 +403,12 @@ def p_hytte(c):
   <div class="stack"><h2>Hytta utvendig</h2><div class="gallery">{g(ute)}</div></div>
   <div class="stack"><h2>Stue, kjøkken og soverom</h2><div class="gallery">{g(inne)}</div></div>
   <div class="note stack" style="gap:8px"><h3>Dette må du vite</h3><ul class="tick">
-    <li>Sengetøy og håndklær: {TODO('MEDBRAKT ELLER INKLUDERT')}</li>
-    <li>Rengjøring: {TODO('GJEST VASKER SELV ELLER SLUTTVASK MOT GEBYR')}</li>
-    <li>Inn- og utsjekk: {TODO('KLOKKESLETT OG NØKKELBOKS')}</li>
-    <li>Røyking og dyr: {TODO('REGLER')}</li>
-    <li>Leievilkår for hytta er ikke skrevet ennå. Dagens <a href="{c.link('vilkar')}">vilkår</a> gjelder utstyr.</li></ul></div>
+    <li>Sengetøy og håndklær må du ta med selv.</li>
+    <li>Hytta vaskes etter bruk, slik at den er klar til neste gjest.</li>
+    <li>Røyking er ikke tillatt inne.</li>
+    <li>Dyr er tillatt.</li>
+    <li>Inn- og utsjekk: {TODO('KLOKKESLETT OG NØKKELBOKS')}</li></ul></div>
+  <div class="stack"><h2>Leievilkår for hytta</h2>{vilkar}</div>
   <div class="panel"><h2>Lei skuter til hytteturen</h2>
     <p>Kombiner hytta med snøskuter og henger fra Namsen Utleie.</p>
     <a class="btn ghost" href="{c.link('snoskuter')}">Se snøskuterne</a></div>
