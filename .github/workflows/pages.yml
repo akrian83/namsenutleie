@@ -1,0 +1,38 @@
+name: Publiser nettsted
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  publiser:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+        id: pages
+      - name: Hent bilder som mangler
+        run: |
+          python3 build.py >/dev/null
+          sh fetch-images.sh
+          if [ -n "$(git status --porcelain images)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add images && git commit -m "Legg til bilder" && git push
+          fi
+      - name: Bygg
+        run: SITE_BASE="${{ steps.pages.outputs.base_path }}" python3 build.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - uses: actions/deploy-pages@v4
+        id: deploy
