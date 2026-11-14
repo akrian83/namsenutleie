@@ -39,12 +39,16 @@ PAGES = {
     "snoskuter": ("snoskuter", "Snøskuter"),
     "henger": ("henger", "Henger"),
     "racing-simulator": ("racing-simulator", "Racing-simulator"),
+    "hytte": ("hytte", "Hytte"),
     "om-oss": ("om-oss", "Om oss"),
     "kontakt": ("kontakt", "Kontakt"),
     "vilkar": ("vilkar", "Vilkår"),
 }
 MAIN_NAV = ["", "utleie", "om-oss", "kontakt", "vilkar"]
-SUB_NAV = ["adria-altea-552-pk-galleri", "snoskuter", "henger", "racing-simulator"]
+SUB_NAV = ["adria-altea-552-pk-galleri", "snoskuter", "henger", "racing-simulator", "hytte"]
+# Utkast: bygges bare i forhåndsvisningen, ikke på det publiserte nettstedet.
+# Fjern sluggen herfra når siden skal ut. Bildene ligger i utkast-bilder/ (ikke i git) til da.
+DRAFT = {"hytte"}
 
 CSS = """
 :root{
@@ -110,6 +114,7 @@ main .wrap{padding-top:40px;padding-bottom:56px}
 .gallery figure{margin:0;display:flex;flex-direction:column;gap:6px}
 .gallery .shot{border-radius:6px}
 .gallery figcaption{font-size:.92rem;color:var(--muted)}
+mark.todo{background:#ffe9a8;color:#5a4300;padding:1px 6px;border-radius:4px;font-size:.85em;font-weight:600}
 .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:12px}
 dl.spec{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-variant-numeric:tabular-nums}
@@ -146,7 +151,12 @@ class Ctx:
     def link(self, slug):
         return "#" + PAGES[slug][0] if self.preview else (BASE + "/" + slug + "/" if slug else BASE + "/")
 
+    def live(self, slug):
+        return self.preview or slug not in DRAFT
+
     def img(self, fname, alt, eager=False):
+        if self.preview and any(os.path.exists(os.path.join(ROOT, d, fname)) for d in ("images", "utkast-bilder")):
+            return f'<div class="shot"><img src="images/{fname}" alt="{html.escape(alt)}" loading="lazy"></div>'
         if self.preview:
             return f'<div class="shot ph" role="img" aria-label="{html.escape(alt)}"><span>Bilde: {html.escape(alt)}</span></div>'
         load = "" if eager else ' loading="lazy"'
@@ -203,6 +213,10 @@ def p_utleie(c):
          "Simulator til leie", "Fullskala rigg med tre skjermer. Til bursdagen, helgen eller firmafesten. Levering i Namdalen for bedrifter.",
          f"{kr(5500)} <small>inntil 4 døgn</small>"),
     ]
+    if c.live("hytte"):
+        rows.append(("hytte", "hytte-ute-1.jpg", "Mørk tømmerhytte med hvite vinduer og overbygd veranda",
+                     "Hytte ved Grong skisenter", "Hytte med to soverom og hems, kort vei til bakken og skistua.",
+                     f"{TODO('PRIS')} <small>per døgn</small>"))
     cards = "".join(
         f'<article class="card">{c.img(f, alt) if f else ""}<div class="body"><h2>{t}</h2><p>{d}</p><p class="price">{pr}</p>'
         f'<a class="btn" href="{c.link(s)}">Se detaljer og book</a></div></article>' for s, f, alt, t, d, pr in rows)
@@ -309,6 +323,62 @@ def p_henger(c):
 </div></main>"""
 
 
+def TODO(t):
+    return f'<mark class="todo">[{t}]</mark>'
+
+
+def p_hytte(c):
+    ute = [("hytte-ute-1.jpg", "Mørk tømmerhytte med hvite vinduer og overbygd veranda", "Overbygd veranda ved inngangen"),
+           ("hytte-ute-2.jpg", "Gavlveggen på hytta med vindu i første etasje og på hemsen", "Gavlen med hemsvinduet øverst")]
+    inne = [("hytte-stue-1.jpg", "Stue med hjørnesofa, salongbord og dører inn til soverommene", "Stue med hjørnesofa"),
+            ("hytte-stue-2.jpg", "Hjørnesofa mot brun panelvegg under skrått hvitt tak", "Åpent til mønet over sofakroken"),
+            ("hytte-spis-1.jpg", "Hvitt spisebord i hjørnet med TV på veggen og vinduer på to sider", "Spiseplass og TV"),
+            ("hytte-spis-2.jpg", "Smårutete vinduer med utsikt mot verandaen", "Lys fra to sider"),
+            ("hytte-kjokken.jpg", "Kjøkken med hvite skap, mørk benkeplate, vask og platetopp", "Kjøkken med platetopp og vask"),
+            ("hytte-sov-1.jpg", "Soverom med dobbeltseng og kommode", "Soverom 1: dobbeltseng"),
+            ("hytte-sov-2.jpg", "Soverom med køyeseng og stige", "Soverom 2: køyeseng"),
+            ("hytte-hems.jpg", "Hems med rød sovesofa under skråtak i furupanel", "Hems med sovesofa"),
+            ("hytte-gang.jpg", "Dør fra stua ut til gang med flislagt gulv og knaggrekke", "Gang med plass til yttertøy")]
+    g = lambda lst: "".join(f"<figure>{c.img(f, a)}<figcaption>{cap}</figcaption></figure>" for f, a, cap in lst)
+    return f"""<main><div class="wrap stack" style="gap:32px">
+  <div class="two" style="align-items:center">
+    <div class="stack">
+      <p class="tag">Nyhet</p>
+      <h1>Hytte til leie ved Grong skisenter</h1>
+      <p class="lead">Koselig tømmerhytte med to soverom og hems, kort vei til bakken og skistua. Passer for familien eller en liten vennegjeng på skihelg.</p>
+      <p class="price">{TODO('PRIS')} <small>per døgn · minimum {TODO('ANTALL')} døgn</small></p>
+      {TODO('BOOKINGLENKE – Booqable eller Airbnb')}
+    </div>
+    <div>{c.img('hytte-ute-1.jpg', 'Mørk tømmerhytte med hvite vinduer og overbygd veranda', True)}</div>
+  </div>
+  <div class="two">
+    <div class="panel"><h3>Nøkkeldata</h3><dl class="spec">
+      <dt>Beliggenhet</dt><dd>Grong skisenter {TODO('ADRESSE')}</dd>
+      <dt>Soverom</dt><dd>2 + hems</dd>
+      <dt>Sengeplasser</dt><dd>dobbeltseng, køyeseng og sovesofa på hems {TODO('ANTALL MÅ BEKREFTES')}</dd>
+      <dt>Bad</dt><dd>{TODO('DUSJ/WC')}</dd>
+      <dt>Oppvarming</dt><dd>{TODO('MÅ FYLLES INN')}</dd>
+      <dt>Parkering</dt><dd>{TODO('MÅ FYLLES INN')}</dd></dl></div>
+    <div class="panel"><h3>Dette finner du i hytta</h3><ul class="tick">
+      <li>Stue med hjørnesofa og TV</li><li>Spisebord ved vinduene</li>
+      <li>Kjøkken med platetopp, vask og kaffemaskin</li><li>Overbygd veranda</li>
+      <li>Gang med plass til yttertøy og sko</li>
+      <li>{TODO('WIFI, OPPVASKMASKIN, VED – MÅ BEKREFTES')}</li></ul></div>
+  </div>
+  <div class="stack"><h2>Hytta utvendig</h2><div class="gallery">{g(ute)}</div></div>
+  <div class="stack"><h2>Stue, kjøkken og soverom</h2><div class="gallery">{g(inne)}</div></div>
+  <div class="note stack" style="gap:8px"><h3>Dette må du vite</h3><ul class="tick">
+    <li>Sengetøy og håndklær: {TODO('MEDBRAKT ELLER INKLUDERT')}</li>
+    <li>Rengjøring: {TODO('GJEST VASKER SELV ELLER SLUTTVASK MOT GEBYR')}</li>
+    <li>Inn- og utsjekk: {TODO('KLOKKESLETT OG NØKKELBOKS')}</li>
+    <li>Røyking og dyr: {TODO('REGLER')}</li>
+    <li>Leievilkår for hytta er ikke skrevet ennå. Dagens <a href="{c.link('vilkar')}">vilkår</a> gjelder utstyr.</li></ul></div>
+  <div class="panel"><h2>Lei skuter til hytteturen</h2>
+    <p>Kombiner hytta med snøskuter og henger fra Namsen Utleie.</p>
+    <a class="btn ghost" href="{c.link('snoskuter')}">Se snøskuterne</a></div>
+</div></main>"""
+
+
 def p_sim(c):
     return f"""<main><div class="wrap stack" style="gap:32px">
   <div class="stack">
@@ -383,7 +453,7 @@ def p_vilkar(c):
 </div></main>"""
 
 
-BODY = {"": p_home, "utleie": p_utleie, "adria-altea-552-pk-galleri": p_vogn, "snoskuter": p_skuter, "henger": p_henger,
+BODY = {"": p_home, "utleie": p_utleie, "adria-altea-552-pk-galleri": p_vogn, "snoskuter": p_skuter, "henger": p_henger, "hytte": p_hytte,
         "racing-simulator": p_sim, "om-oss": p_om, "kontakt": p_kontakt, "vilkar": p_vilkar}
 
 META = {
@@ -393,6 +463,7 @@ META = {
     "snoskuter": ("Snøskuter | Namsen Utleie", "Lei Polaris snøskuter i Overhalla. Enkeltvis eller som pakke med henger."),
     "henger": ("Henger | Namsen Utleie", "Lei lukket henger for snøskuter og varer i Overhalla."),
     "racing-simulator": ("Racing-simulator | Namsen Utleie", "Lei profesjonell racing-simulator med Fanatec-utstyr og tre skjermer."),
+    "hytte": ("Hytte ved Grong skisenter | Namsen Utleie", "Lei hytte med to soverom og hems ved Grong skisenter."),
     "om-oss": ("Om oss | Namsen Utleie", "Namsen Utleie er et lokalt utleiefirma i Namdalen, drevet av AKRI Holding AS."),
     "kontakt": ("Kontakt | Namsen Utleie", "Kontakt Namsen Utleie på e-post eller telefon."),
     "vilkar": ("Vilkår | Namsen Utleie", "Vilkår for utleie hos Namsen Utleie."),
@@ -406,7 +477,7 @@ def header(c, cur):
     out = (f'<header class="site-head"><div class="wrap"><a class="mark" href="{c.link("")}">Namsen <span>Utleie</span></a>'
            f'<nav aria-label="Hovedmeny"><ul>{"".join(li(s) for s in MAIN_NAV)}</ul></nav></div></header>')
     if cur == "utleie" or cur in SUB_NAV:
-        sub = "".join(f'<li><a href="{c.link(s)}"{' aria-current="page"' if s == cur else ''}>{PAGES[s][1]}</a></li>' for s in SUB_NAV)
+        sub = "".join(f'<li><a href="{c.link(s)}"{' aria-current="page"' if s == cur else ''}>{PAGES[s][1]}</a></li>' for s in SUB_NAV if c.live(s))
         out += f'<div class="subnav"><div class="wrap"><nav aria-label="Utstyr"><ul>{sub}</ul></nav></div></div>'
     return out
 
@@ -433,6 +504,8 @@ def build_site():
         f.write(CSS.strip() + "\n")
     urls = []
     for slug in PAGES:
+        if slug in DRAFT:
+            continue
         title, desc = META[slug]
         url = DOMAIN + ("/" + slug if slug else "")
         urls.append(url)
@@ -485,7 +558,7 @@ def build_preview():
 .js .view{{display:none}} .js .view.on{{display:block}}
 .banner{{background:var(--signal);color:#fff;font-size:.9rem;padding:8px 20px;text-align:center}}
 </style></head>
-<body><div class="banner">Forhåndsvisning. Skraverte felt er plasser for bilder.</div>
+<body><div class="banner">Forhåndsvisning. Hyttesiden er et utkast og er ikke publisert. Gule felt må fylles inn.</div>
 {views}{footer(c)}
 <script>
 (function(){{
@@ -503,6 +576,13 @@ def build_preview():
     os.makedirs(os.path.join(ROOT, "preview"), exist_ok=True)
     with open(os.path.join(ROOT, "preview", "index.html"), "w") as f:
         f.write(doc)
+    pimg = os.path.join(ROOT, "preview", "images")
+    shutil.rmtree(pimg, ignore_errors=True)
+    os.makedirs(pimg)
+    for d in ("images", "utkast-bilder"):
+        if os.path.isdir(os.path.join(ROOT, d)):
+            for fn in os.listdir(os.path.join(ROOT, d)):
+                shutil.copy(os.path.join(ROOT, d, fn), os.path.join(pimg, fn))
 
 
 if __name__ == "__main__":
