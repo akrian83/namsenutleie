@@ -10,3 +10,5 @@ Booking og betaling skjer i Booqable (`namsen-utleie.booqableshop.com`). Nettste
 
 Nettadressene er de samme som på den gamle Wix-siden: `/utleie/`, `/adria-altea-552-pk-galleri/`,
 `/snoskuter/`, `/henger/`, `/racing-simulator/`, `/om-oss/`, `/kontakt/`, `/vilkar/`.
+
+Nettstedet publiseres på https://www.namsenutleie.no (eget domene satt i Settings → Pages).
