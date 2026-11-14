@@ -324,7 +324,7 @@ def p_sim(c):
       <dt>Skjerm</dt><dd>3 × 32″ buede gamingskjermer</dd>
       <dt>PC</dt><dd>Intel Core i9, RTX 2080 Ti, 32 GB RAM</dd></dl></div>
     <div class="panel"><p class="tag">Privat</p><h2>Lei for helgen</h2>
-      <p>Perfekt for bursdag, vennekveld eller en helg med trening. Kort opplæring ved utlevering.</p>
+      <p>Perfekt for bursdag eller en helg med trening. Kort opplæring ved utlevering.</p>
       <dl class="spec"><dt>Inntil 4 døgn</dt><dd>{kr(5500)} – minstepris, helgen inkludert</dd><dt>Ekstra døgn</dt><dd>{kr(600)} per døgn</dd><dt>Depositum</dt><dd>{kr(3000)}</dd></dl>
       <p class="price">{kr(5500)} <small>inntil 4 døgn</small></p>{book(SHOP_P + 'racing-simulator', 'Book nå')}</div>
   </div>
