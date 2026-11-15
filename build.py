@@ -49,99 +49,180 @@ SUB_NAV = ["adria-altea-552-pk-galleri", "snoskuter", "henger", "racing-simulato
 # Utkast: bygges bare i forhåndsvisningen, ikke på det publiserte nettstedet.
 # Fjern sluggen herfra når siden skal ut. Bildene ligger i utkast-bilder/ (ikke i git) til da.
 DRAFT = {"hytte"}
+# Sider som åpner med en fullskjerms bildescene (menyen legges over bildet).
+HERO = {"", "adria-altea-552-pk-galleri", "snoskuter", "henger", "racing-simulator", "hytte"}
 
 CSS = """
 :root{
-  /* Layout: mørk granskog-stripe øverst og nederst, lyse flater imellom, én signalfarge for booking */
-  --snow:#f2f5f3; --paper:#ffffff; --ink:#10231d; --muted:#4f615a; --line:#d3dcd7;
-  --brand:#17463a; --deep:#123a30; --on-deep:#eef4f1; --on-deep-muted:#b5cbc2; --signal:#c2410c;
-  --display:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  /* Stil: mørk granskog og varm sand. Fullskjerms bildescener med korte setninger, rolige flater imellom. */
+  --snow:#f5f0e8; --paper:#fbf8f3; --ink:#1f2a24; --muted:#58645d; --line:#ddd3c4;
+  --brand:#1d4a3b; --deep:#14281f; --on-deep:#f3ead9; --on-deep-muted:#cdc1ab; --sand:#e6cfb3; --signal:#a8481a;
+  --btn:#1d4a3b; --btn-ink:#ffffff;
+  --display:"Cormorant Garamond","Iowan Old Style",Georgia,serif;
   --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  color-scheme:dark; --snow:#0d1814; --paper:#15231e; --ink:#e8efeb; --muted:#a2b5ad; --line:#2a3c35;
-  --brand:#9bd3be; --deep:#0f2d25;}}
+  color-scheme:dark; --snow:#0f1a15; --paper:#16241d; --ink:#efe7d8; --muted:#b3aa98; --line:#2c3b33;
+  --brand:#a9d6c1; --deep:#0c1812; --btn:#e6cfb3; --btn-ink:#14281f; --signal:#f0a36b;}}
 :root[data-theme="dark"]{
-  color-scheme:dark; --snow:#0d1814; --paper:#15231e; --ink:#e8efeb; --muted:#a2b5ad; --line:#2a3c35;
-  --brand:#9bd3be; --deep:#0f2d25;}
+  color-scheme:dark; --snow:#0f1a15; --paper:#16241d; --ink:#efe7d8; --muted:#b3aa98; --line:#2c3b33;
+  --brand:#a9d6c1; --deep:#0c1812; --btn:#e6cfb3; --btn-ink:#14281f; --signal:#f0a36b;}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--snow);color:var(--ink);font:400 1.0625rem/1.6 var(--body)}
+body{margin:0;background:var(--snow);color:var(--ink);font:400 1.0625rem/1.65 var(--body)}
 img{max-width:100%;display:block}
 a{color:var(--brand)}
-a:focus-visible,.btn:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
-h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
-h1{font-size:clamp(1.9rem,5vw,3rem);font-weight:800;letter-spacing:-.01em}
-h2{font-size:clamp(1.35rem,3vw,1.75rem);font-weight:700}
-h3{font-size:1.05rem;font-weight:700}
+a:focus-visible,.btn:focus-visible,summary:focus-visible,.strip:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);font-weight:500;line-height:1.08;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.4rem,6vw,3.8rem)}
+h2{font-size:clamp(1.9rem,4vw,2.8rem)}
+h3{font:700 1.05rem/1.25 var(--body)}
 p{margin:0;max-width:65ch}
 .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 .stack{display:flex;flex-direction:column;gap:18px}
 .site-head{background:var(--deep);color:var(--on-deep)}
-.site-head .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 24px;padding-top:14px;padding-bottom:14px}
-.mark{font:800 1.25rem/1 var(--display);color:var(--on-deep);text-decoration:none;letter-spacing:.02em;text-transform:uppercase}
-.mark span{color:#f4a261}
-nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 18px}
-.site-head nav a{color:var(--on-deep);text-decoration:none;font-weight:600;padding:6px 0;display:inline-block;border-bottom:2px solid transparent}
-.site-head nav a:hover,.site-head nav a[aria-current="page"]{border-bottom-color:#f4a261}
+.site-head.over{position:absolute;inset:0 0 auto 0;z-index:5;background:linear-gradient(rgba(8,16,12,.72),rgba(8,16,12,0))}
+.site-head .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 24px;padding-top:16px;padding-bottom:16px}
+.mark{font:500 1.7rem/1 var(--display);color:var(--on-deep);text-decoration:none;letter-spacing:.02em}
+.mark span{color:var(--sand);font-style:italic}
+nav ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:4px 20px}
+.site-head nav a{color:var(--on-deep);text-decoration:none;font-weight:600;font-size:.95rem;letter-spacing:.04em;padding:6px 0;display:inline-block;border-bottom:1px solid transparent}
+.site-head nav a:hover,.site-head nav a[aria-current="page"]{border-bottom-color:var(--sand)}
 .subnav{background:var(--paper);border-bottom:1px solid var(--line)}
 .subnav .wrap{padding-top:10px;padding-bottom:10px}
 .subnav a{text-decoration:none;font-weight:600;color:var(--muted)}
 .subnav a[aria-current="page"],.subnav a:hover{color:var(--brand)}
-.hero{background:var(--deep);color:var(--on-deep)}
-.hero .wrap{display:grid;grid-template-columns:1.1fr 1fr;gap:32px;align-items:center;padding-top:40px;padding-bottom:48px}
-.hero p{color:var(--on-deep-muted);font-size:1.15rem}
 main .wrap{padding-top:40px;padding-bottom:56px}
-.lead{font-size:1.15rem;color:var(--muted)}
-.btn{display:inline-block;background:var(--signal);color:#fff;font:700 1rem/1 var(--display);text-decoration:none;padding:14px 22px;border-radius:6px;align-self:flex-start}
-.btn:hover{filter:brightness(1.1)}
-.btn.ghost{background:transparent;color:var(--brand);border:2px solid var(--brand);padding:12px 20px}
-.row{display:flex;flex-wrap:wrap;gap:12px}
+main .scene .wrap{padding-top:0;padding-bottom:0}
+.lead{font-size:1.2rem;color:var(--muted)}
+.btn{display:inline-block;background:var(--btn);color:var(--btn-ink);font:600 .95rem/1 var(--body);letter-spacing:.08em;text-transform:uppercase;text-decoration:none;padding:16px 24px;border:1px solid var(--btn);border-radius:2px;align-self:flex-start}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:transparent;color:var(--brand);border-color:var(--brand)}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px}
-.card{background:var(--paper);border:1px solid var(--line);border-radius:8px;overflow:hidden;display:flex;flex-direction:column}
-.card .body{padding:18px;display:flex;flex-direction:column;gap:10px;flex:1}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:2px;overflow:hidden;display:flex;flex-direction:column}
+.card .body{padding:20px;display:flex;flex-direction:column;gap:10px;flex:1}
 .card .btn{margin-top:auto}
-.price{font:700 1.1rem/1.2 var(--display);font-variant-numeric:tabular-nums;color:var(--ink)}
-.tag{font:700 .78rem/1 var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--signal);max-width:none}
+.card h2{font-size:1.9rem}
+.price{font:600 1.1rem/1.2 var(--body);font-variant-numeric:tabular-nums;color:var(--ink)}
+.tag{font:600 .78rem/1 var(--body);letter-spacing:.16em;text-transform:uppercase;color:var(--signal);max-width:none}
 .price small{font:400 .95rem var(--body);color:var(--muted)}
 .shot{margin:0;aspect-ratio:4/3;background:var(--line);overflow:hidden}
 .shot img{width:100%;height:100%;object-fit:cover}
 .shot.ph{display:flex;align-items:center;justify-content:center;padding:14px;text-align:center;color:var(--muted);font-size:.9rem;
   background:repeating-linear-gradient(135deg,var(--line) 0 12px,transparent 12px 24px)}
-.hero .shot{border-radius:8px;aspect-ratio:16/10}
-.hero .shot.ph{color:var(--on-deep-muted);background:repeating-linear-gradient(135deg,rgba(255,255,255,.1) 0 12px,transparent 12px 24px)}
-.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
-.gallery figure{margin:0;display:flex;flex-direction:column;gap:6px}
-.gallery .shot{border-radius:6px}
-.gallery figcaption{font-size:.92rem;color:var(--muted)}
 mark.todo{background:#ffe9a8;color:#5a4300;padding:1px 6px;border-radius:4px;font-size:.85em;font-weight:600}
 .two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
-.panel{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:12px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:2px;padding:24px;display:flex;flex-direction:column;gap:12px}
 dl.spec{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-variant-numeric:tabular-nums}
 dl.spec dt{color:var(--muted)} dl.spec dd{margin:0;font-weight:600;text-align:right;overflow-wrap:anywhere}
 ul.tick{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:4px}
 .tablewrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;background:var(--paper);border:1px solid var(--line);border-radius:8px;font-variant-numeric:tabular-nums}
+table{border-collapse:collapse;width:100%;background:var(--paper);border:1px solid var(--line);font-variant-numeric:tabular-nums}
 th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-family:var(--display);font-size:.9rem;color:var(--muted)}
+th{font-size:.9rem;color:var(--muted)}
 td.num,th.num{text-align:right;white-space:nowrap}
 tr:last-child td{border-bottom:0}
-.note{border-left:4px solid var(--signal);background:var(--paper);padding:14px 16px;border-radius:0 6px 6px 0}
+.note{border-left:3px solid var(--signal);background:var(--paper);padding:16px 18px}
 .terms{display:flex;flex-direction:column;gap:22px;max-width:70ch}
 .terms section{display:flex;flex-direction:column;gap:8px}
+.terms h2{font-size:1.7rem}
+
+/* Bildescener */
+.scene{position:relative;min-height:100svh;display:flex;align-items:flex-end;color:var(--on-deep);background:var(--deep);overflow:hidden;isolation:isolate}
+.scene.half{min-height:72svh}
+.scene.mid{align-items:center}
+.scene>.bg{position:absolute;inset:0;z-index:-2;background:var(--deep)}
+.scene>.bg img{width:100%;height:100%;object-fit:cover}
+.bg.plain,.bg.ph{background:radial-gradient(120% 90% at 20% 10%,#2c5646 0,var(--deep) 70%)}
+.scene::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(8,16,12,.5) 0,rgba(8,16,12,.12) 38%,rgba(8,16,12,.78) 100%)}
+.scene>.wrap{width:100%;display:flex;flex-direction:column;gap:20px;padding-top:130px;padding-bottom:clamp(48px,11vh,120px)}
+.scene .tag{color:var(--sand)}
+.stmt{display:flex;flex-direction:column;font-size:clamp(2.6rem,8.4vw,6rem);font-weight:500;line-height:1;text-shadow:0 2px 36px rgba(0,0,0,.4);max-width:none}
+.stmt .ln:nth-child(even){padding-left:clamp(1.2rem,13vw,10rem)}
+.scene.r>.wrap{align-items:flex-end;text-align:right}
+.scene.r .stmt{align-items:flex-end}
+.scene.r .stmt .ln:nth-child(even){padding-left:0;padding-right:clamp(1.2rem,13vw,10rem)}
+.scene .sub{font-size:1.2rem;max-width:44ch;text-shadow:0 1px 18px rgba(0,0,0,.45)}
+.scene .btn{background:var(--sand);border-color:var(--sand);color:#14281f}
+.scene .btn.ghost{background:transparent;color:var(--on-deep);border-color:var(--on-deep)}
+.glass{background:rgba(12,22,17,.66);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);padding:24px;max-width:440px;display:flex;flex-direction:column;gap:12px;text-align:left}
+.glass h3{font:500 2rem/1.05 var(--display)}
+.glass dl.spec dt{color:var(--on-deep-muted)}
+.glass .price,.glass .price small{color:var(--on-deep)}
+@media (min-width:900px){
+  .scene.split{display:grid;grid-template-columns:1fr 1fr;align-items:stretch}
+  .scene.split::after{display:none}
+  .scene.split>.bg{position:relative;inset:auto;z-index:auto;grid-column:2;grid-row:1;min-height:100svh}
+  .scene.split>.bg img{position:absolute;inset:0}
+  .scene.split.fl>.bg{grid-column:1}
+  .scene.split>.wrap{grid-column:1;grid-row:1;max-width:none;margin:0;justify-content:center;padding:130px clamp(32px,6vw,96px) 80px}
+  .scene.split.fl>.wrap{grid-column:2}
+  .scene.split .stmt{font-size:clamp(2.6rem,5.2vw,4.8rem)}
+  .scene.split.r>.wrap{align-items:flex-start;text-align:left}
+  .scene.split.r .stmt{align-items:flex-start}
+  .scene.split.r .stmt .ln:nth-child(even){padding-right:0;padding-left:clamp(1.2rem,6vw,5rem)}
+}
+.sec{padding:clamp(56px,10vw,120px) 0}
+.sec.tint{background:var(--paper);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sec>.wrap{padding-top:0!important;padding-bottom:0!important}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:30px 20px}
+.facts b{display:block;font:500 clamp(2.3rem,5.5vw,3.4rem)/1 var(--display);font-variant-numeric:lining-nums;margin-bottom:8px}
+.facts span{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,6vw,88px);align-items:center}
+.duo .shot{aspect-ratio:var(--r,4/5)}
+.duo .txt{gap:18px}
+.duo.flip .txt{order:2}
+.duo p{font-size:1.12rem}
+@media (max-width:760px){.duo{grid-template-columns:1fr}.duo.flip .txt{order:0}}
+.strip{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding:0 20px;padding:4px 20px 18px;margin:0 -20px}
+.strip figure{flex:0 0 min(78vw,400px);margin:0;scroll-snap-align:start}
+.strip .shot{aspect-ratio:var(--r,3/4)}
+.strip figcaption{font-size:.92rem;color:var(--muted);padding-top:8px}
+details.acc{border-top:1px solid var(--line)}
+details.acc:last-of-type{border-bottom:1px solid var(--line)}
+details.acc summary{list-style:none;cursor:pointer;padding:18px 0;font:500 1.6rem/1.2 var(--display);display:flex;justify-content:space-between;gap:16px;align-items:center}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::after{content:"+";font:400 1.5rem/1 var(--body);color:var(--muted)}
+details.acc[open] summary::after{content:"\\2013"}
+details.acc .inner{padding:0 0 24px;max-width:65ch}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.tile{position:relative;aspect-ratio:3/4;display:flex;align-items:flex-end;color:#fff;text-decoration:none;overflow:hidden;background:var(--deep);isolation:isolate}
+.tile .bg{position:absolute;inset:0;z-index:-2}
+.tile .bg img{width:100%;height:100%;object-fit:cover}
+.tile::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(8,16,12,0) 35%,rgba(8,16,12,.82) 100%)}
+.tile .t{padding:20px;display:flex;flex-direction:column;gap:4px}
+.tile h3{font:500 2.1rem/1 var(--display)}
+.tile span{font-size:.95rem;color:var(--on-deep)}
+.tile .bg img{transition:transform .8s ease}
+.tile:hover .bg img,.tile:focus-visible .bg img{transform:scale(1.05)}
 .site-foot{background:var(--deep);color:var(--on-deep-muted)}
-.site-foot .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px;padding-top:36px;padding-bottom:36px}
-.site-foot h2{font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--on-deep)}
+.site-foot .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:28px;padding-top:40px;padding-bottom:40px}
+.site-foot h2{font:600 .8rem/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--on-deep)}
 .site-foot a{color:var(--on-deep)}
 .site-foot address{font-style:normal}
 .site-foot .stack{gap:10px}
-@media (max-width:720px){.hero .wrap{grid-template-columns:1fr;padding-top:28px;padding-bottom:32px}}
-@media (prefers-reduced-motion:no-preference){.btn{transition:filter .15s}}
+@media (prefers-reduced-motion:no-preference){
+  .btn{transition:filter .15s}
+  .js .rv{opacity:0;transform:translateY(24px);transition:opacity 1.1s ease,transform 1.1s ease;transition-delay:calc(var(--i,0)*.22s)}
+  .js .rv.in{opacity:1;transform:none}
+  .js .scene>.bg img{transform:scale(1.08);transition:transform 2.6s ease}
+  .js .scene.on>.bg img{transform:none}
+}
 """
 
 FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com">'
          '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
-         '<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">')
+         '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">')
+
+# Liten skript for rolleeffekt: tekst og bilder glir inn når de kommer til syne. Uten JS vises alt som vanlig.
+JS_REVEAL = """<script>
+(function(){var d=document;d.documentElement.classList.add('js');
+var els=d.querySelectorAll('.rv,.scene');
+if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in','on')});return;}
+var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in','on');io.unobserve(e.target);}})},{threshold:.2});
+els.forEach(function(e){io.observe(e)});})();
+</script>"""
 
 
 class Ctx:
@@ -154,13 +235,26 @@ class Ctx:
     def live(self, slug):
         return self.preview or slug not in DRAFT
 
+    def _has(self, fname):
+        return any(os.path.exists(os.path.join(ROOT, d, fname)) for d in ("images", "utkast-bilder"))
+
     def img(self, fname, alt, eager=False):
-        if self.preview and any(os.path.exists(os.path.join(ROOT, d, fname)) for d in ("images", "utkast-bilder")):
+        if self.preview and self._has(fname):
             return f'<div class="shot"><img src="images/{fname}" alt="{html.escape(alt)}" loading="lazy"></div>'
         if self.preview:
             return f'<div class="shot ph" role="img" aria-label="{html.escape(alt)}"><span>Bilde: {html.escape(alt)}</span></div>'
         load = "" if eager else ' loading="lazy"'
         return f'<div class="shot"><img src="{BASE}/images/{fname}" alt="{html.escape(alt)}"{load}></div>'
+
+    def bg(self, fname, alt, eager=False):
+        if fname is None:
+            return '<div class="bg plain"></div>'
+        if self.preview and self._has(fname):
+            return f'<div class="bg"><img src="images/{fname}" alt="{html.escape(alt)}"></div>'
+        if self.preview:
+            return f'<div class="bg ph" role="img" aria-label="{html.escape(alt)}"></div>'
+        load = "" if eager else ' loading="lazy"'
+        return f'<div class="bg"><img src="{BASE}/images/{fname}" alt="{html.escape(alt)}"{load}></div>'
 
 
 def kr(n):
@@ -171,96 +265,112 @@ def book(url, label="Sjekk tilgjengelighet og book"):
     return f'<a class="btn" href="{url}">{label}</a>'
 
 
-# ---------- Sideinnhold ----------
+# ---------- Byggeklosser for opplevelsen ----------
+
+def lines(ls, h="h2"):
+    spans = "".join(f'<span class="ln rv" style="--i:{i}">{t}</span>' for i, t in enumerate(ls))
+    return f'<{h} class="stmt">{spans}</{h}>'
+
+
+def scene(c, f, alt, ls, cls="", tag="", sub="", cta="", panel="", h="h2", eager=False):
+    n = len(ls)
+    t = f'<p class="tag rv">{tag}</p>' if tag else ""
+    s = f'<p class="sub rv" style="--i:{n}">{sub}</p>' if sub else ""
+    k = f'<div class="row rv" style="--i:{n + 1}">{cta}</div>' if cta else ""
+    p = f'<div class="glass rv" style="--i:{n}">{panel}</div>' if panel else ""
+    return (f'<section class="scene {cls}">{c.bg(f, alt, eager)}<div class="wrap">{t}{lines(ls, h)}{s}{p}{k}</div></section>')
+
+
+def facts(items):
+    return ('<section class="sec"><div class="wrap"><div class="facts">'
+            + "".join(f'<div class="rv" style="--i:{i}"><b>{v}</b><span>{k}</span></div>' for i, (v, k) in enumerate(items))
+            + '</div></div></section>')
+
+
+def duo(c, f, alt, h, text, tag="", flip=False, ratio="4/5", extra="", tint=False):
+    tg = f'<p class="tag">{tag}</p>' if tag else ""
+    return (f'<section class="sec{" tint" if tint else ""}"><div class="wrap"><div class="duo{" flip" if flip else ""}" style="--r:{ratio}">'
+            f'<div class="txt stack rv">{tg}<h2>{h}</h2>{text}{extra}</div>'
+            f'<div class="rv" style="--i:1">{c.img(f, alt)}</div></div></div></section>')
+
+
+def strip(c, h, lst, text=""):
+    figs = "".join(f'<figure class="rv" style="--i:{min(i, 3)};--r:{(it[3] if len(it) > 3 else "3/4")}">{c.img(it[0], it[1])}<figcaption>{it[2]}</figcaption></figure>'
+                   for i, it in enumerate(lst))
+    tx = f"<p>{text}</p>" if text else ""
+    return (f'<section class="sec"><div class="wrap stack" style="gap:24px"><div class="stack rv"><h2>{h}</h2>{tx}</div>'
+            f'<div class="strip" tabindex="0" role="region" aria-label="{html.escape(h)}">{figs}</div></div></section>')
+
+
+def acc(title, inner, open_=False):
+    return f'<details class="acc"{" open" if open_ else ""}><summary>{title}</summary><div class="inner stack">{inner}</div></details>'
+
+
+def section(inner, tint=False):
+    return f'<section class="sec{" tint" if tint else ""}"><div class="wrap stack" style="gap:28px">{inner}</div></section>'
+
+
+TILES = [
+    ("adria-altea-552-pk-galleri", "adria-eksterior-1.jpg", "Adria Altea 552 PK campingvogn", "Campingvogn", f"Adria Altea 552 PK · {kr(6500)} per uke"),
+    ("snoskuter", "snoskuter-hero.jpg", "To Polaris snøskutere i dyp snø", "Snøskuter", f"Polaris SKS og RMK · fra {kr(1990)} per døgn"),
+    ("henger", "henger-side.jpg", "Skuter- og varehenger", "Henger", f"Skuter- og varehenger · fra {kr(700)} per døgn"),
+    ("racing-simulator", None, "", "Simulator", f"Fullskala rigg · {kr(5500)} inntil 4 døgn"),
+    ("hytte", "hytte-ute-1.jpg", "Mørk tømmerhytte med overbygd veranda", "Hytte", "Ved Grong skisenter · bookes på Airbnb"),
+]
+
+
+def tiles(c, cur="", heading="Mer å leie"):
+    items = "".join(
+        f'<a class="tile rv" style="--i:{i % 4}" href="{c.link(s)}">{c.bg(f, a)}<span class="t"><h3>{t}</h3><span>{d}</span></span></a>'
+        for i, (s, f, a, t, d) in enumerate(x for x in TILES if x[0] != cur and c.live(x[0])))
+    return section(f'<h2 class="rv">{heading}</h2><div class="tiles">{items}</div>')
+
+
+# ---------- Sider ----------
 
 def p_home(c):
-    cards = [
-        ("adria-altea-552-pk-galleri", "Campingvogn", "Adria Altea 552 PK med tre køyer.", f"{kr(6500)} <small>per uke</small>"),
-        ("snoskuter", "Snøskuter", "To Polaris-skutere, enkeltvis eller som pakke med henger.", f"fra {kr(1990)} <small>per døgn</small>"),
-        ("henger", "Henger", "Lukket henger for skuter og varer.", f"{kr(700)} <small>per døgn</small>"),
-        ("racing-simulator", "Racing-simulator", "Fullskala rigg med tre skjermer.", f"{kr(5500)} <small>inntil 4 døgn</small>"),
-    ]
-    items = "".join(
-        f'<article class="card"><div class="body"><h3>{t}</h3><p>{d}</p><p class="price">{pr}</p>'
-        f'<a class="btn ghost" href="{c.link(s)}">Se {t.lower()}</a></div></article>' for s, t, d, pr in cards)
-    return f"""
-<section class="hero"><div class="wrap">
-  <div class="stack">
-    <h1>Utstyr til tur og transport – hele året</h1>
-    <p>Lei campingvogn, snøskuter, henger og racing-simulator i Overhalla og Namdalen. Book på nett og hent utstyret i Overhalla.</p>
-    <a class="btn" href="{c.link('utleie')}">Se utstyr</a>
-  </div>
-  {c.img('snoskuter-hero.jpg', 'To Polaris snøskutere i dyp snø – snøskuter til leie i Overhalla', eager=True)}
-</div></section>
-<main><div class="wrap stack" style="gap:24px">
-  <h2>Dette kan du leie</h2>
-  <div class="cards">{items}</div>
-</div></main>"""
-
-
-def p_utleie(c):
-    rows = [
-        ("adria-altea-552-pk-galleri", "adria-eksterior-1.jpg", "Adria Altea 552 PK campingvogn sett utvendig fra front og side",
-         "Adria Altea 552 m/3 køyer", "Praktisk campingvogn med 3 køyer og god plass til familieferie. Egenvekt 1310 kg og bredde 230 cm – passer også bak elbil.",
-         f"{kr(6500)} <small>per uke · depositum {kr(10000)}</small>"),
-        ("snoskuter", "snoskuter-hero.jpg", "To Polaris snøskutere i dyp snø",
-         "Snøskuter til leie", "Polaris SKS 800 og PRO RMK 850. Løypeskuter og fjellskuter – alene eller i pakke med henger.",
-         f"fra {kr(1990)} <small>per døgn · depositum {kr(5000)}</small>"),
-        ("henger", "henger-side.jpg", "Skuter- og varehengeren sett fra siden",
-         "Henger til leie", "Skuter- og varehenger. Til snøskuter, flyttelass, hageavfall og annen frakt. Henting i Overhalla.",
-         f"fra {kr(700)} <small>per døgn · depositum {kr(2000)}</small>"),
-        ("racing-simulator", None, "",
-         "Simulator til leie", "Fullskala rigg med tre skjermer. Til bursdagen, helgen eller firmafesten. Levering i Namdalen for bedrifter.",
-         f"{kr(5500)} <small>inntil 4 døgn</small>"),
-    ]
-    if c.live("hytte"):
-        rows.append(("hytte", "hytte-ute-1.jpg", "Mørk tømmerhytte med hvite vinduer og overbygd veranda",
-                     "Hytte ved Grong skisenter", "Hytte med to soverom og hems, kort vei til bakken og skistua.",
-                     "Pris på Airbnb <small>varierer med sesong</small>"))
-    cards = "".join(
-        f'<article class="card">{c.img(f, alt) if f else ""}<div class="body"><h2>{t}</h2><p>{d}</p><p class="price">{pr}</p>'
-        f'<a class="btn" href="{c.link(s)}">Se detaljer og book</a></div></article>' for s, f, alt, t, d, pr in rows)
-    return f"""<main><div class="wrap stack" style="gap:24px">
-  <h1>Utleie i Overhalla og Namdalen</h1>
-  <p class="lead">Velg utstyr, sjekk tilgjengelighet og betal på nett. Alle priser er inkludert mva.</p>
-  <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">{cards}</div>
-</div></main>"""
+    return f"""<main>
+{scene(c, 'snoskuter-hero.jpg', 'To Polaris snøskutere i dyp snø – snøskuter til leie i Overhalla', ['Utstyr til tur', 'og transport,', 'hele året.'], h='h1', eager=True,
+       sub='Lei campingvogn, snøskuter, henger og racing-simulator i Overhalla og Namdalen.',
+       cta=f'<a class="btn" href="{c.link("utleie")}">Se utstyr</a>')}
+{scene(c, 'adria-eksterior-4.jpg', 'Campingvogn koblet til bil, klar for tur', ['Book på nett.', 'Hent i Overhalla.'], cls='half r',
+       sub='Velg utstyr, sjekk ledige datoer og betal. Resten gjør vi klart.')}
+{tiles(c, heading='Dette kan du leie')}
+</main>"""
 
 
 def p_vogn(c):
-    ext = [("adria-eksterior-1.jpg", "Adria Altea 552 PK campingvogn sett utvendig fra front og side", "Adria Altea 552 PK eksteriør"),
-           ("adria-eksterior-2.jpg", "Adria Altea 552 PK campingvogn sett fra siden med moderne eksteriør", "Enkelt og praktisk utsveivbar markise"),
-           ("adria-eksterior-3.jpg", "Adria Altea 552 PK campingvogn sett forfra", "Flott design"),
-           ("adria-eksterior-4.jpg", "Adria Altea 552 PK campingvogn koblet til bil klar for tur", "Lett og smal vogn – enkel på tur med elbil")]
-    inn = [("adria-interior-1.jpg", "Interiør i Adria Altea 552 PK campingvogn med lyst og moderne oppholdsrom", "Flott og moderne vogn"),
-           ("adria-interior-2.jpg", "Dobbeltseng foran i Adria Altea 552 PK campingvogn", "Dobbeltseng foran"),
-           ("adria-interior-3.jpg", "Tre køyesenger bak i Adria Altea 552 PK familievogn", "3 køyesenger bak"),
-           ("adria-interior-4.jpg", "Kjøkken i Adria Altea 552 PK med kokeplater, vask og oppbevaring", "Fullt utstyrt kjøkken med alle nødvendigheter"),
-           ("adria-interior-5.jpg", "Sittegruppe i Adria Altea 552 PK campingvogn", "Hyggelig oppholdsrom for måltider og avslapning"),
-           ("adria-interior-6.jpg", "Bad og toalett i Adria Altea 552 PK campingvogn", "Kompakt og funksjonelt bad med dusjfasiliteter"),
-           ("adria-interior-7.jpg", "Dusjrom i Adria Altea 552 PK campingvogn", "Eget dusjkabinett – luksus på tur")]
-    g = lambda lst: "".join(f"<figure>{c.img(f, a)}<figcaption>{cap}</figcaption></figure>" for f, a, cap in lst)
-    return f"""<main><div class="wrap stack" style="gap:32px">
-  <div class="stack">
-    <h1>Leie av Adria Altea 552 PK</h1>
-    <p class="lead">Se utvendige og innvendige bilder av vogna her før du booker.</p>
-    <p class="price">{kr(6500)} <small>per uke · depositum {kr(10000)} · aldersgrense 23 år</small></p>
-    {book(SHOP_VOGN, 'Lei Adria Altea')}
-  </div>
-  <div class="stack"><h2>Utvendige bilder</h2><div class="gallery">{g(ext)}</div></div>
-  <div class="stack"><h2>Innvendige fasiliteter</h2><div class="gallery">{g(inn)}</div></div>
-  <div class="two">
+    return f"""<main>
+{scene(c, 'adria-eksterior-1.jpg', 'Adria Altea 552 PK campingvogn sett utvendig fra front og side', ['Leie av', 'Adria Altea 552 PK'], h='h1', eager=True, tag='Campingvogn',
+       sub='Moderne vogn med dobbeltseng foran og tre køyer bak. Lett nok til å trekke med elbil.',
+       cta=book(SHOP_VOGN, 'Lei Adria Altea'))}
+{facts([('opptil 7', 'soveplasser'), (f'1{NB}310 kg', 'egenvekt'), ('230 cm', 'bredde'), ('760 cm', 'lengde')])}
+{scene(c, 'adria-eksterior-4.jpg', 'Adria Altea 552 PK koblet til bil, klar for tur', ['Lett og smal,', 'enkel bak elbilen.'], cls='half r')}
+{duo(c, 'adria-interior-1.jpg', 'Interiør i Adria Altea 552 PK campingvogn med lyst og moderne oppholdsrom', 'Lyst og moderne inni',
+     '<p>Sittegruppe til måltidene, smart-TV og elektrisk gulvvarme. Kjøkkenet har det du trenger for å lage mat på tur, og vogna har eget bad med dusjkabinett.</p>',
+     tag='Innvendig', ratio='4/3')}
+{scene(c, 'adria-interior-2.jpg', 'Dobbeltseng foran i Adria Altea 552 PK campingvogn', ['Dobbeltseng foran,', 'tre køyer bak.'], cls='split fl')}
+{strip(c, 'Rommene i vogna', [
+    ('adria-interior-3.jpg', 'Tre køyesenger bak i Adria Altea 552 PK familievogn', 'Tre køyesenger bak'),
+    ('adria-interior-4.jpg', 'Kjøkken i Adria Altea 552 PK med kokeplater, vask og oppbevaring', 'Kjøkken med alt du trenger', '4/3'),
+    ('adria-interior-5.jpg', 'Sittegruppe i Adria Altea 552 PK campingvogn', 'Sittegruppe for måltider og avslapning', '4/3'),
+    ('adria-interior-6.jpg', 'Bad og toalett i Adria Altea 552 PK campingvogn', 'Kompakt og funksjonelt bad'),
+    ('adria-interior-7.jpg', 'Dusjrom i Adria Altea 552 PK campingvogn', 'Eget dusjkabinett')])}
+{strip(c, 'Utenfor', [
+    ('adria-eksterior-2.jpg', 'Adria Altea 552 PK campingvogn sett fra siden med moderne eksteriør', 'Enkel utsveivbar markise', '4/3'),
+    ('adria-eksterior-3.jpg', 'Adria Altea 552 PK campingvogn sett forfra', 'Moderne design', '4/3')])}
+{section(f'''<div class="two">
     <div class="panel"><h3>Nøkkeldata</h3><dl class="spec">
       <dt>Modellår</dt><dd>2026</dd><dt>Lengde</dt><dd>760 cm</dd><dt>Bredde</dt><dd>230 cm</dd>
       <dt>Egenvekt</dt><dd>1310 kg</dd><dt>Totalvekt</dt><dd>1500 kg</dd><dt>Soveplasser</dt><dd>opptil 7</dd></dl></div>
     <div class="panel"><h3>Viktig utstyr</h3><ul class="tick">
       <li>Smart-TV</li><li>Elektrisk gulvvarme</li><li>Sentralvarme på strøm/gass</li><li>Markise</li>
-      <li>Komplett kjøkkenutstyr</li><li>Noe campingmøbler inkludert</li></ul></div>
-  </div>
-  <div class="panel"><h2>Klar for tur?</h2>
-    <p>Sjekk ledige uker og book direkte. Les <a href="{c.link('vilkar')}">vilkårene</a> før du bestiller.</p>
-    {book(SHOP_VOGN, 'Lei Adria Altea')}</div>
-</div></main>"""
+      <li>Komplett kjøkkenutstyr</li><li>Noe campingmøbler inkludert</li></ul></div></div>''', tint=True)}
+{scene(c, 'adria-eksterior-3.jpg', 'Adria Altea 552 PK campingvogn sett forfra', ['Klar for tur?'], cls='half',
+       sub=f'{kr(6500)} per uke · depositum {kr(10000)} · aldersgrense 23 år. Les <a href="{c.link("vilkar")}" style="color:inherit">vilkårene</a> før du bestiller.',
+       cta=book(SHOP_VOGN, 'Lei Adria Altea'))}
+{tiles(c, 'adria-altea-552-pk-galleri')}
+</main>"""
 
 
 def p_skuter(c):
@@ -272,55 +382,50 @@ def p_skuter(c):
     def pk(name, txt, price, slug):
         return f"""<article class="card"><div class="body"><h3>{name}</h3><p>{txt}</p>
       <p class="price">Fra {kr(price)} <small>per døgn</small></p>{book(SHOP_P + slug, 'Book pakke')}</div></article>"""
-    return f"""<main><div class="wrap stack" style="gap:32px">
-  <div class="stack">
-    <h1>Snøskuter til leie i Namdalen</h1>
-    <p class="lead">Lei en godt vedlikeholdt Polaris for en dag på løypa, en helg på hytta eller en isfisketur. Vi har to skutere – én for trygg løypekjøring og én for deg som vil ut i dyp snø. Lei dem alene, eller som pakke med skuterhenger.</p>
-  </div>
+    must = (f'<ul class="tick"><li>Førerkort klasse S, eller førerett i klasse B fra før 1. juli 2006. Vi sjekker førerkort ved utlevering.</li>'
+            f'<li>Kjøring kun i lovlige snøskuterløyper eller der du har tillatelse. Du er selv ansvarlig for løypekort og lokale regler.</li>'
+            f'<li>Hjelm er påbudt.</li><li>Skuteren leveres med full tank og skal leveres tilbake med full tank.</li>'
+            f'<li>Se våre <a href="{c.link("vilkar")}">leievilkår</a>.</li></ul>')
+    return f"""<main>
+{scene(c, 'snoskuter-hero.jpg', 'To Polaris snøskutere i dyp snø', ['Snøskuter til leie', 'i Namdalen'], h='h1', eager=True, tag='Snøskuter',
+       sub='En dag på løypa, en helg på hytta eller en isfisketur. To Polaris-skutere: én for trygg løypekjøring og én for deg som vil ut i dyp snø.',
+       cta=book(SHOP_P + 'polaris-800-sks-155', 'Book SKS 800') + book(SHOP_P + 'polaris-850-pro-rmk-155', 'Book PRO RMK 850'))}
+{section(f'''<p class="tag rv">To skutere, to retninger</p>
   <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">
     {sk('polaris-sks.jpg', 'Sort Polaris 800 SKS 155 snøskuter', 'Løype og tur', 'Polaris 800 SKS 155', 'Allsidig skuter med god komfort og justerbare støtdempere. Stabil på hardpakket løype – et trygt valg for deg som kjører mest i løypene.', '800 cc totakt', 1990, 3980, 'polaris-800-sks-155')}
     {sk('polaris-rmk.jpg', 'Gul Polaris 850 PRO RMK 155 snøskuter', 'Dyp snø og fjell', 'Polaris 850 PRO RMK 155', 'Lett fjellskuter bygget for løs snø og bratt terreng. Passer for erfarne førere som vil utforske.', '850 cc totakt', 2290, 4580, 'polaris-850-pro-rmk-155')}
-  </div>
-  <div class="stack"><h2>Pakker med skuterhenger</h2><p>Ca. 10{NB}% rimeligere enn å leie hver for seg.</p>
+  </div>''')}
+{section(f'''<h2 class="rv">Pakker med skuterhenger</h2><p>Ca. 10{NB}% rimeligere enn å leie hver for seg.</p>
   <div class="cards">
     {pk('SKS 800 + henger', 'Løypeskuteren og skuterhengeren i én bestilling.', 2421, 'pakke-polaris-800-sks-henger')}
     {pk('PRO RMK 850 + henger', 'Fjellskuteren og skuterhengeren i én bestilling.', 2691, 'pakke-polaris-850-pro-rmk-henger')}
     {pk('2 snøskutere + henger', 'Begge skuterne og hengeren – ta med hele gjengen.', 4482, 'pakke-2-snoskutere-henger')}
-  </div></div>
-  <div class="note stack" style="gap:8px"><h3>Dette må du vite</h3><ul class="tick">
-    <li>Førerkort klasse S, eller førerett i klasse B fra før 1. juli 2006. Vi sjekker førerkort ved utlevering.</li>
-    <li>Kjøring kun i lovlige snøskuterløyper eller der du har tillatelse. Du er selv ansvarlig for løypekort og lokale regler.</li>
-    <li>Hjelm er påbudt.</li>
-    <li>Skuteren leveres med full tank og skal leveres tilbake med full tank.</li>
-    <li>Se våre <a href="{c.link('vilkar')}">leievilkår</a>.</li></ul></div>
-</div></main>"""
+  </div>''', tint=True)}
+{section(f'<h2 class="rv">Dette må du vite</h2><div>{acc("Førerkort, løype og utstyr", must, True)}</div>')}
+{tiles(c, 'snoskuter')}
+</main>"""
 
 
 def p_henger(c):
-    return f"""<main><div class="wrap stack" style="gap:32px">
-  <div class="stack">
-    <h1>Henger til leie i Overhalla</h1>
-    <p class="lead">Vår henger er både skuterhenger og varehenger. Frakt snøskuteren til hytta om vinteren – eller bruk den til flyttelass, hageavfall, byggevarer og annet utstyr resten av året.</p>
-    <div style="max-width:560px">{c.img('henger-side.jpg', 'Skuter- og varehengeren sett fra siden')}</div>
-  </div>
-  <div class="two">
-    <article class="card">{c.img('henger.jpg', 'Lasterommet i hengeren')}<div class="body">
-      <p class="tag">Hele året</p><h2>Skuter- og varehenger</h2>
-      <p>Allsidig henger for snøskuter og vanlig varetransport. Henting i Overhalla.</p>
-      <dl class="spec"><dt>Bruk</dt><dd>snøskuter, flytting, hageavfall, byggevarer m.m.</dd><dt>Depositum</dt><dd>{kr(2000)}</dd>
-      <dt>Mål</dt><dd>5,96 × 2,01 m (total lengde og bredde)</dd><dt>Nyttelast</dt><dd>880 kg</dd><dt>Tillatt totalvekt</dt><dd>1{NB}260 kg</dd></dl>
-      <p class="price">Fra {kr(700)} <small>per døgn · helg {kr(1400)}</small></p>{book(SHOP_P + 'snoskutertilhenger', 'Book henger')}</div></article>
-    <article class="card"><div class="body"><p class="tag">Vinterpakke</p><h2>Henger + snøskuter</h2>
-      <p>Lei hengeren sammen med én eller begge skuterne og spar ca. 10{NB}%.</p>
-      <dl class="spec"><dt>SKS 800 + henger</dt><dd>fra {kr(2421)}/døgn</dd><dt>PRO RMK 850 + henger</dt><dd>fra {kr(2691)}/døgn</dd><dt>2 skutere + henger</dt><dd>fra {kr(4482)}/døgn</dd></dl>
-      <a class="btn ghost" href="{c.link('snoskuter')}">Se skuterpakkene</a></div></article>
-  </div>
-  <div class="note stack" style="gap:8px"><h3>Dette må du vite</h3><ul class="tick">
-    <li>Bilen må ha hengerfeste og tillatt tilhengervekt som dekker hengeren med last (inntil 1{NB}260 kg).</li>
-    <li>Med førerkort B kan bil og henger ha samlet tillatt totalvekt på inntil 3{NB}500 kg. Over det trengs B96 (inntil 4{NB}250 kg) eller BE. Sjekk bilens vognkort.</li>
-    <li>Lasten skal sikres forskriftsmessig, og hengeren leveres tilbake ryddet og uten avfall.</li>
-    <li>Skader meldes umiddelbart. Se våre <a href="{c.link('vilkar')}">leievilkår</a>.</li></ul></div>
-</div></main>"""
+    must = (f'<ul class="tick"><li>Bilen må ha hengerfeste og tillatt tilhengervekt som dekker hengeren med last (inntil 1{NB}260 kg).</li>'
+            f'<li>Med førerkort B kan bil og henger ha samlet tillatt totalvekt på inntil 3{NB}500 kg. Over det trengs B96 (inntil 4{NB}250 kg) eller BE. Sjekk bilens vognkort.</li>'
+            f'<li>Lasten skal sikres forskriftsmessig, og hengeren leveres tilbake ryddet og uten avfall.</li>'
+            f'<li>Skader meldes umiddelbart. Se våre <a href="{c.link("vilkar")}">leievilkår</a>.</li></ul>')
+    return f"""<main>
+{scene(c, 'henger-side.jpg', 'Skuter- og varehengeren sett fra siden', ['Henger til leie', 'i Overhalla'], h='h1', eager=True, tag='Henger',
+       sub='Både skuterhenger og varehenger. Frakt snøskuteren til hytta om vinteren, og bruk den til flytting, hageavfall og byggevarer resten av året.',
+       cta=book(SHOP_P + 'snoskutertilhenger', 'Book henger'))}
+{facts([(f'880 kg', 'nyttelast'), (f'1{NB}260 kg', 'tillatt totalvekt'), ('5,96 × 2,01 m', 'total lengde og bredde'), (f'fra {kr(700)}', 'per døgn')])}
+{duo(c, 'henger.jpg', 'Lasterommet i hengeren', 'Rom for det meste',
+     f'<p>Allsidig henger for snøskuter og vanlig varetransport. Henting i Overhalla. Helgepris {kr(1400)} og depositum {kr(2000)}.</p>',
+     tag='Hele året', ratio='16/10', extra=book(SHOP_P + 'snoskutertilhenger', 'Book henger'))}
+{section(f'''<p class="tag rv">Vinterpakke</p><h2 class="rv">Henger og snøskuter</h2>
+  <p>Lei hengeren sammen med én eller begge skuterne og spar ca. 10{NB}%.</p>
+  <dl class="spec" style="max-width:520px"><dt>SKS 800 + henger</dt><dd>fra {kr(2421)}/døgn</dd><dt>PRO RMK 850 + henger</dt><dd>fra {kr(2691)}/døgn</dd><dt>2 skutere + henger</dt><dd>fra {kr(4482)}/døgn</dd></dl>
+  <a class="btn ghost" href="{c.link('snoskuter')}">Se skuterpakkene</a>''', tint=True)}
+{section(f'<h2 class="rv">Dette må du vite</h2><div>{acc("Bil, førerkort og last", must, True)}</div>')}
+{tiles(c, 'henger')}
+</main>"""
 
 
 def TODO(t):
@@ -360,32 +465,31 @@ HYTTE_TERMS = [
 ]
 
 
+
 def p_hytte(c):
-    ute = [("hytte-ute-1.jpg", "Mørk tømmerhytte med hvite vinduer og overbygd veranda", "Overbygd veranda ved inngangen"),
-           ("hytte-ute-2.jpg", "Gavlveggen på hytta med vindu i første etasje og på hemsen", "Gavlen med hemsvinduet øverst")]
-    inne = [("hytte-stue-1.jpg", "Stue med hjørnesofa, salongbord og dører inn til soverommene", "Stue med hjørnesofa"),
-            ("hytte-stue-2.jpg", "Hjørnesofa mot brun panelvegg under skrått hvitt tak", "Åpent til mønet over sofakroken"),
-            ("hytte-spis-1.jpg", "Hvitt spisebord i hjørnet med TV på veggen og vinduer på to sider", "Spiseplass og TV"),
-            ("hytte-spis-2.jpg", "Smårutete vinduer med utsikt mot verandaen", "Lys fra to sider"),
-            ("hytte-kjokken.jpg", "Kjøkken med hvite skap, mørk benkeplate, vask og platetopp", "Kjøkken med platetopp og vask"),
-            ("hytte-sov-1.jpg", "Soverom med dobbeltseng og kommode", "Soverom 1: dobbeltseng"),
-            ("hytte-sov-2.jpg", "Soverom med køyeseng og stige", "Soverom 2: køyeseng"),
-            ("hytte-hems.jpg", "Hems med rød sovesofa under skråtak i furupanel", "Hems med sovesofa"),
-            ("hytte-gang.jpg", "Dør fra stua ut til gang med flislagt gulv og knaggrekke", "Gang med plass til yttertøy")]
-    g = lambda lst: "".join(f"<figure>{c.img(f, a)}<figcaption>{cap}</figcaption></figure>" for f, a, cap in lst)
-    vilkar = "".join(f'<div class="panel"><h3>{i}. {h}</h3><ul class="tick">{"".join(f"<li>{x}</li>" for x in items)}</ul></div>'
-                     for i, (h, items) in enumerate(HYTTE_TERMS, 1))
-    return f"""<main><div class="wrap stack" style="gap:32px">
-  <div class="two" style="align-items:center">
-    <div class="stack">
-      <p class="tag">Nyhet</p>
-      <h1>Hytte til leie ved Grong skisenter</h1>
-      <p class="lead">Koselig tømmerhytte med to soverom og hems, kort vei til bakken og skistua. Passer for familien eller en liten vennegjeng på skihelg.</p>
-      <p>Hytta bookes på Airbnb. Der ser du ledige datoer og gjeldende pris, som varierer med sesong og ukedag.</p>
-      {book(AIRBNB_HYTTE, 'Se pris og book på Airbnb')} {TODO('AIRBNB-LENKE MANGLER')}
-    </div>
-    <div>{c.img('hytte-ute-1.jpg', 'Mørk tømmerhytte med hvite vinduer og overbygd veranda', True)}</div>
-  </div>
+    terms = "".join(acc(f"{i}. {h}", f'<ul class="tick">{"".join(f"<li>{x}</li>" for x in items)}</ul>')
+                    for i, (h, items) in enumerate(HYTTE_TERMS, 1))
+    airbnb = book(AIRBNB_HYTTE, 'Se pris og book på Airbnb')
+    return f"""<main>
+{scene(c, 'hytte-ute-1.jpg', 'Mørk tømmerhytte med hvite vinduer og overbygd veranda', ['Hytte ved', 'Grong skisenter'], cls='split', h='h1', eager=True, tag='Til leie',
+       sub='Tømmerhytte med to soverom og hems, kort vei til bakken og skistua. Pris og ledige datoer finner du på Airbnb.',
+       cta=airbnb + ' ' + TODO('AIRBNB-LENKE MANGLER'))}
+{scene(c, 'hytte-ute-2.jpg', 'Gavlveggen på hytta med vindu i første etasje og på hemsen', ['Skia av.', 'Støvlene i gangen.', 'Nå er du fremme.'], cls='split fl r')}
+{facts([('2', 'soverom'), ('1', 'hems'), (TODO('ANTALL'), 'sengeplasser'), ('1', 'overbygd veranda')])}
+{duo(c, 'hytte-stue-1.jpg', 'Stue med hjørnesofa, salongbord og dører inn til soverommene', 'Samles i stua',
+     '<p>Hjørnesofa, TV og spiseplass i samme rom. Kveldsmat, kortspill og en film når bakken har stengt for dagen.</p>', tag='Stue')}
+{scene(c, 'hytte-stue-2.jpg', 'Hjørnesofa mot brun panelvegg under skrått hvitt tak', ['Høyt under taket,', 'lavt i skuldrene.'], cls='split')}
+{duo(c, 'hytte-kjokken.jpg', 'Kjøkken med hvite skap, mørk benkeplate, vask og platetopp', 'Lag maten sammen',
+     f'<p>Kjøkken med platetopp og vask, og spisebordet like ved. {TODO("UTSTYR MÅ BEKREFTES: OPPVASKMASKIN, KAFFEMASKIN OSV.")}</p>', tag='Kjøkken', flip=True)}
+{scene(c, 'hytte-spis-2.jpg', 'Smårutete vinduer med utsikt mot verandaen', ['Lys fra', 'to sider.'], cls='split fl r')}
+{strip(c, 'To soverom og en hems',
+    [('hytte-sov-1.jpg', 'Soverom med dobbeltseng og kommode', 'Soverom 1: dobbeltseng'),
+     ('hytte-sov-2.jpg', 'Soverom med køyeseng og stige', 'Soverom 2: køyeseng'),
+     ('hytte-hems.jpg', 'Hems med rød sovesofa under skråtak i furupanel', 'Hems med sovesofa'),
+     ('hytte-spis-1.jpg', 'Hvitt spisebord i hjørnet med TV på veggen og vinduer på to sider', 'Spiseplass og TV'),
+     ('hytte-gang.jpg', 'Dør fra stua ut til gang med flislagt gulv og knaggrekke', 'Gang med plass til yttertøy')],
+    text='Ta med eget sengetøy og egne håndklær. Hytta vaskes etter bruk, slik at den er klar til neste gjest.')}
+{section(f'''<h2 class="rv">Det praktiske</h2>
   <div class="two">
     <div class="panel"><h3>Nøkkeldata</h3><dl class="spec">
       <dt>Beliggenhet</dt><dd>Grong skisenter {TODO('ADRESSE')}</dd>
@@ -394,34 +498,27 @@ def p_hytte(c):
       <dt>Bad</dt><dd>{TODO('DUSJ/WC')}</dd>
       <dt>Oppvarming</dt><dd>{TODO('MÅ FYLLES INN')}</dd>
       <dt>Parkering</dt><dd>{TODO('MÅ FYLLES INN')}</dd></dl></div>
-    <div class="panel"><h3>Dette finner du i hytta</h3><ul class="tick">
-      <li>Stue med hjørnesofa og TV</li><li>Spisebord ved vinduene</li>
-      <li>Kjøkken med platetopp, vask og kaffemaskin</li><li>Overbygd veranda</li>
-      <li>Gang med plass til yttertøy og sko</li>
-      <li>{TODO('WIFI, OPPVASKMASKIN, VED – MÅ BEKREFTES')}</li></ul></div>
-  </div>
-  <div class="stack"><h2>Hytta utvendig</h2><div class="gallery">{g(ute)}</div></div>
-  <div class="stack"><h2>Stue, kjøkken og soverom</h2><div class="gallery">{g(inne)}</div></div>
-  <div class="note stack" style="gap:8px"><h3>Dette må du vite</h3><ul class="tick">
-    <li>Sengetøy og håndklær må du ta med selv.</li>
-    <li>Hytta vaskes etter bruk, slik at den er klar til neste gjest.</li>
-    <li>Røyking er ikke tillatt inne.</li>
-    <li>Dyr er tillatt.</li>
-    <li>Inn- og utsjekk: {TODO('KLOKKESLETT OG NØKKELBOKS')}</li></ul></div>
-  <div class="stack"><h2>Leievilkår for hytta</h2>{vilkar}</div>
-  <div class="panel"><h2>Lei skuter til hytteturen</h2>
-    <p>Kombiner hytta med snøskuter og henger fra Namsen Utleie.</p>
-    <a class="btn ghost" href="{c.link('snoskuter')}">Se snøskuterne</a></div>
-</div></main>"""
+    <div class="note stack" style="gap:8px"><h3>Dette må du vite</h3><ul class="tick">
+      <li>Sengetøy og håndklær må du ta med selv.</li>
+      <li>Hytta vaskes etter bruk, slik at den er klar til neste gjest.</li>
+      <li>Røyking er ikke tillatt inne.</li>
+      <li>Dyr er tillatt.</li>
+      <li>Inn- og utsjekk: {TODO('KLOKKESLETT OG NØKKELBOKS')}</li></ul></div>
+  </div>''', tint=True)}
+{section(f'<h2 class="rv">Leievilkår for hytta</h2><div>{terms}</div>')}
+{scene(c, 'hytte-ute-1.jpg', 'Mørk tømmerhytte med hvite vinduer og overbygd veranda', ['Ledige datoer', 'og pris på Airbnb.'], cls='split fl', 
+       sub='Kombiner hytteturen med snøskuter og henger fra Namsen Utleie.',
+       cta=airbnb + f'<a class="btn ghost" href="{c.link("snoskuter")}">Se snøskuterne</a>')}
+{tiles(c, 'hytte')}
+</main>"""
 
 
 def p_sim(c):
-    return f"""<main><div class="wrap stack" style="gap:32px">
-  <div class="stack">
-    <h1>Racing-simulator til leie</h1>
-    <p class="lead">Til firmafesten, bursdagen eller helgen. Fullskala simulator med direktedrevet ratt, pedaler i klubbsportklasse og tre 32″ buede skjermer – en realistisk følelse av å sitte i en racerbil.</p>
-  </div>
-  <div class="two">
+    return f"""<main>
+{scene(c, None, '', ['Racing-simulator', 'til leie'], h='h1', eager=True, cls='half', tag='Simulator',
+       sub='Til firmafesten, bursdagen eller helgen. Fullskala simulator med direktedrevet ratt, pedaler i klubbsportklasse og tre 32″ buede skjermer.',
+       cta=book(SHOP_P + 'racing-simulator', 'Book nå'))}
+{section(f'''<div class="two">
     <div class="panel"><p class="tag">Utstyr</p><h2>Dette får du</h2><dl class="spec">
       <dt>Cockpit</dt><dd>Trak Racer TR160 med Sparco Circuit-sete</dd>
       <dt>Ratt</dt><dd>Fanatec CSL DD 8 Nm, Formula- og Nascar-ratt</dd>
@@ -433,13 +530,44 @@ def p_sim(c):
       <p>Perfekt for bursdag eller en helg med trening. Kort opplæring ved utlevering.</p>
       <dl class="spec"><dt>Inntil 4 døgn</dt><dd>{kr(5500)} – minstepris, helgen inkludert</dd><dt>Ekstra døgn</dt><dd>{kr(600)} per døgn</dd><dt>Depositum</dt><dd>{kr(3000)}</dd></dl>
       <p class="price">{kr(5500)} <small>inntil 4 døgn</small></p>{book(SHOP_P + 'racing-simulator', 'Book nå')}</div>
-  </div>
-  <div class="panel"><h2>Bedrift og arrangement</h2>
+  </div>''')}
+{section(f'''<div class="panel"><h2>Bedrift og arrangement</h2>
     <p>Firmafest, messe eller teambuilding – med konkurranse og resultatliste.</p>
     <p>Vi leverer, rigger opp og henter i Namdalen. Pris etter omfang, fra {kr(5500)}.</p>
     <a class="btn ghost" href="{c.link('kontakt')}">Be om tilbud</a></div>
-  <p>Utstyret skal stå innendørs og tørt. Se våre <a href="{c.link('vilkar')}">leievilkår</a>.</p>
+  <p>Utstyret skal stå innendørs og tørt. Se våre <a href="{c.link('vilkar')}">leievilkår</a>.</p>''', tint=True)}
+{tiles(c, 'racing-simulator')}
+</main>"""
+
+
+def p_utleie(c):
+    rows = [
+        ("adria-altea-552-pk-galleri", "adria-eksterior-1.jpg", "Adria Altea 552 PK campingvogn sett utvendig fra front og side",
+         "Adria Altea 552 m/3 køyer", "Praktisk campingvogn med 3 køyer og god plass til familieferie. Egenvekt 1310 kg og bredde 230 cm – passer også bak elbil.",
+         f"{kr(6500)} <small>per uke · depositum {kr(10000)}</small>"),
+        ("snoskuter", "snoskuter-hero.jpg", "To Polaris snøskutere i dyp snø",
+         "Snøskuter til leie", "Polaris SKS 800 og PRO RMK 850. Løypeskuter og fjellskuter – alene eller i pakke med henger.",
+         f"fra {kr(1990)} <small>per døgn · depositum {kr(5000)}</small>"),
+        ("henger", "henger-side.jpg", "Skuter- og varehengeren sett fra siden",
+         "Henger til leie", "Skuter- og varehenger. Til snøskuter, flyttelass, hageavfall og annen frakt. Henting i Overhalla.",
+         f"fra {kr(700)} <small>per døgn · depositum {kr(2000)}</small>"),
+        ("racing-simulator", None, "",
+         "Simulator til leie", "Fullskala rigg med tre skjermer. Til bursdagen, helgen eller firmafesten. Levering i Namdalen for bedrifter.",
+         f"{kr(5500)} <small>inntil 4 døgn</small>"),
+    ]
+    if c.live("hytte"):
+        rows.append(("hytte", "hytte-ute-1.jpg", "Mørk tømmerhytte med hvite vinduer og overbygd veranda",
+                     "Hytte ved Grong skisenter", "Hytte med to soverom og hems, kort vei til bakken og skistua.",
+                     "Pris på Airbnb <small>varierer med sesong</small>"))
+    cards = "".join(
+        f'<article class="card">{c.img(f, alt) if f else ""}<div class="body"><h2>{t}</h2><p>{d}</p><p class="price">{pr}</p>'
+        f'<a class="btn" href="{c.link(s)}">Se detaljer og book</a></div></article>' for s, f, alt, t, d, pr in rows)
+    return f"""<main><div class="wrap stack" style="gap:24px">
+  <h1>Utleie i Overhalla og Namdalen</h1>
+  <p class="lead">Velg utstyr, sjekk tilgjengelighet og betal på nett. Alle priser er inkludert mva.</p>
+  <div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))">{cards}</div>
 </div></main>"""
+
 
 
 def p_om(c):
@@ -510,10 +638,11 @@ def header(c, cur):
     def li(s):
         on = ' aria-current="page"' if (s == cur or (s == "utleie" and cur in SUB_NAV)) else ""
         return f'<li><a href="{c.link(s)}"{on}>{PAGES[s][1]}</a></li>'
-    out = (f'<header class="site-head"><div class="wrap"><a class="mark" href="{c.link("")}">Namsen <span>Utleie</span></a>'
+    over = " over" if cur in HERO else ""
+    out = (f'<header class="site-head{over}"><div class="wrap"><a class="mark" href="{c.link("")}">Namsen <span>Utleie</span></a>'
            f'<nav aria-label="Hovedmeny"><ul>{"".join(li(s) for s in MAIN_NAV)}</ul></nav></div></header>')
-    if cur == "utleie" or cur in SUB_NAV:
-        sub = "".join(f'<li><a href="{c.link(s)}"{' aria-current="page"' if s == cur else ''}>{PAGES[s][1]}</a></li>' for s in SUB_NAV if c.live(s))
+    if cur == "utleie":
+        sub = "".join(f'<li><a href="{c.link(s)}">{PAGES[s][1]}</a></li>' for s in SUB_NAV if c.live(s))
         out += f'<div class="subnav"><div class="wrap"><nav aria-label="Utstyr"><ul>{sub}</ul></nav></div></div>'
     return out
 
@@ -552,7 +681,7 @@ def build_site():
 <meta property="og:title" content="{html.escape(title)}"><meta property="og:description" content="{html.escape(desc)}">
 <meta property="og:type" content="website"><meta property="og:url" content="{url}"><meta property="og:image" content="{DOMAIN}/images/adria-eksterior-1.jpg">
 {FONTS}<link rel="stylesheet" href="{BASE}/style.css"></head>
-<body>{header(c, slug)}{BODY[slug](c)}{footer(c)}</body></html>
+<body>{header(c, slug)}{BODY[slug](c)}{footer(c)}{JS_REVEAL}</body></html>
 """
         d = os.path.join(dist, slug)
         os.makedirs(d, exist_ok=True)
@@ -591,7 +720,7 @@ def build_preview():
 <html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Namsen Utleie nettside</title>
 {FONTS}<style>{CSS}
-.js .view{{display:none}} .js .view.on{{display:block}}
+.js .view{{display:none}} .js .view.on{{display:block}} .view{{position:relative}}
 .banner{{background:var(--signal);color:#fff;font-size:.9rem;padding:8px 20px;text-align:center}}
 </style></head>
 <body><div class="banner">Forhåndsvisning. Hyttesiden er et utkast og er ikke publisert. Gule felt må fylles inn.</div>
@@ -607,7 +736,7 @@ def build_preview():
   }}
   window.addEventListener('hashchange',show); show();
 }})();
-</script></body></html>
+</script>{JS_REVEAL}</body></html>
 """
     os.makedirs(os.path.join(ROOT, "preview"), exist_ok=True)
     with open(os.path.join(ROOT, "preview", "index.html"), "w") as f:
