@@ -18,6 +18,7 @@ IMAGES = {
     "adria-eksterior-2.jpg": WIX + "fcca76_637696227d964964a059dca22c9a4ce3~mv2.jpg",
     "adria-eksterior-3.jpg": WIX + "fcca76_e2e605eae9bf41de806890cb89f20763~mv2.jpg",
     "adria-eksterior-4.jpg": WIX + "fcca76_0f980ecfc2794ceaa837dad039db092b~mv2.jpg",
+    # adria-eksterior-5.jpg: lokalt bilde (ikke på Wix) – ligger i images/
     "adria-interior-1.jpg": WIX + "fcca76_822f3fe4449e48af8679467504222baa~mv2.jpg",
     "adria-interior-2.jpg": WIX + "fcca76_4f264f7bc7f8478bae3b959468ee1897~mv2.jpg",
     "adria-interior-3.jpg": WIX + "fcca76_46db76e4f102430eab62807a63f9f028~mv2.jpg",
@@ -358,6 +359,7 @@ def p_vogn(c):
     ('adria-interior-7.jpg', 'Dusjrom i Adria Altea 552 PK campingvogn', 'Eget dusjkabinett')])}
 {strip(c, 'Utenfor', [
     ('adria-eksterior-2.jpg', 'Adria Altea 552 PK campingvogn sett fra siden med moderne eksteriør', 'Enkel utsveivbar markise', '4/3'),
+    ('adria-eksterior-5.jpg', 'Adria Altea 552 PK campingvogn med utrullet markise, sidematte og stativ', 'Markise og uteplass', '4/3'),
     ('adria-eksterior-3.jpg', 'Adria Altea 552 PK campingvogn sett forfra', 'Moderne design', '4/3')])}
 {section(f'''<div class="two">
     <div class="panel"><h3>Nøkkeldata</h3><dl class="spec">
